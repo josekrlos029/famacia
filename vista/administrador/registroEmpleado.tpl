@@ -21,76 +21,6 @@
     });
 });
     
-    function eliminarServicio(idServicio){
-        var idPersona= $("#idPersonas").val();
-        
-        var data = {
-            idPersona: idPersona,
-            idServicio: idServicio
-        };
-
-        $.ajax({
-            type: "POST",
-            url: "/palace/administrador/eliminarServiciosEmpleado",
-            data: data
-        })
-                .done(function(msg) {
-
-                    var json = eval("(" + msg + ")");
-
-                    if (json == "exito") {
-
-                        consultaPersona(idPersona);
-
-                    } else if (json == 23000) {
-
-                        
-                    }else{
-                        
-                    }
-                });
-    }
-    
-    function agregarServicios(){
-        var idPersona= $("#idPersonas").val();
-        var servicios = document.getElementById("servs").options;
-        var arreglo = new Array();
-        var j = 0;
-        for (var i = 0; i < servicios.length; i++) {
-            if (servicios[i].selected == true) {
-                arreglo[j] = servicios[i].value;
-                j++;
-            }
-        }
-
-
-        var data = {
-            idPersona: idPersona,
-            servicios: JSON.stringify(arreglo)
-        };
-
-        $.ajax({
-            type: "POST",
-            url: "/palace/administrador/agregarServiciosEmpleado",
-            data: data
-        })
-                .done(function(msg) {
-
-                    var json = eval("(" + msg + ")");
-
-                    if (json == "exito") {
-
-                        consultaPersona(idPersona);
-
-                    } else if (json == 23000) {
-
-                        
-                    }else{
-                        
-                    }
-                });
-    }
-    
     
      function consultaPersona(idPersona) {
         var x = $("#mensaje");
@@ -98,48 +28,32 @@
         x.html ("<p>Cargando...</p>");
         x.show("speed");
       
-
         var data = { idPersona: idPersona };
 
         $.ajax({
             type: "POST",
-            url: "/palace/administrador/consultarPersona",
+            url: "/famacia/administrador/consultarPersona",
             data: data
         }).done(function(msg) {
 
             var json = eval("(" + msg + ")");
-            $("#idPersonas").val(json.idPersona);
+            $("#identificacions").val(json.identificacion);
+            $("#tipoIdentificacions").val(json.tipoIdentificacion);
             $("#nombre").val(json.nombre);
             $("#pApellidos").val(json.primerApellido);
             $("#sApellidos").val(json.segundoApellido);
             $("#sexos").val(json.sexo);
             $("#fNacimientos").val(json.fechaNacimiento);
             $("#telefonos").val(json.telefono);
-            $("#celulars").val(json.celular);
             $("#direccions").val(json.direccion);
-            $("#correos").val(json.correo);
             ocultar();
             document.getElementById('light').style.display = 'block';
             document.getElementById('fade').style.display = 'block';
-            consultarServicios(idPersona);
+            
         });
 
 
     }  
-    
-    function consultarServicios(idPersona){
-       
-        var data = { idPersona: idPersona };
-
-        $.ajax({
-            type: "POST",
-            url: "/palace/administrador/consultarServiciosPersona",
-            data: data
-        }).done(function(msg) {
-            $("#vistaServicios").html(msg);
-        });
-
-    }
     
 function modificarPersona(){
    
@@ -177,7 +91,7 @@ function modificarPersona(){
         
         $.ajax({
                       type: "POST",
-                      url: "/palace/administrador/modificarPersona",
+                      url: "/famacia/administrador/modificarPersona",
                       data: persona
                   })
                   .done(function(msg) {
@@ -214,48 +128,31 @@ function modificarPersona(){
         x.show("slow");
         y.show("speed");
 
-        var idPersona = $("#idPersona").val();
+        var identificacion = $("#identificacion").val();
+        var tipoIdentificacion = $("#tipoIdentificacion").val();
         var nombres = $("#nombres").val();
         var pApellido = $("#pApellido").val();
         var sApellido = $("#sApellido").val();
         var sexo = $("#sexo").val();
         var fecha = $("#fNacimiento").val();
         var telefono = $("#telefono").val();
-        var celular = $("#celular").val();
         var direccion = $("#direccion").val();
-        var correo = $("#correo").val();
-        var rol = "E"
-        if($("#activarMedico").is(':checked')) { 
-            rol = "M";
-        }
-        var servicios = document.getElementById("servicios").options;
-        var arreglo = new Array();
-        var j = 0;
-        for (var i = 0; i < servicios.length; i++) {
-            if (servicios[i].selected == true) {
-                arreglo[j] = servicios[i].value;
-                j++;
-            }
-        }
-
-
-        var persona = { idPersona: idPersona,
-            nombres: nombres,
-            pApellido: pApellido,
-            sApellido: sApellido,
-            sexo: sexo,
-            fNacimiento: fecha,
-            telefono: telefono,
-            celular: celular,
-            direccion: direccion,
-            correo: correo,
-            rol: rol,
-            servicios: JSON.stringify(arreglo)
+        
+        var persona ={ identificacion:identificacion,
+                    tipoIdentificacion: tipoIdentificacion,
+                    nombres: nombres,
+                    pApellido: pApellido,
+                    sApellido: sApellido,
+                    sexo: sexo,
+                    fNacimiento: fecha,
+                    telefono: telefono,
+                    direccion:direccion,
+                    rol: "F"
         };
 
         $.ajax({
             type: "POST",
-            url: "/palace/administrador/registrarPersona",
+            url: "/famacia/administrador/registrarPersona",
             data: persona
         })
                 .done(function(msg) {
@@ -331,30 +228,24 @@ function modificarPersona(){
     <form id="form" action="javascript: return false;">
         <table border="0" align="left" width="100%" >
             <tr><td style="text-align: left;"><h2>Registro de Empleados</h2></td></tr>
-            <tr><td style="text-align: left;"><input type="number" id="idPersona" name="idPersona" required placeholder="Cedula" class="box-text" onkeypress="javascript:return validarNro(event)" ></td></tr>    
+            <tr><td style="text-align: left;"><input type="number" id="identificacion" name="identificacion" required placeholder="Identificación" class="box-text" onkeypress="javascript:return validarNro(event)" ></td></tr>    
+                    <tr><td style="text-align: left;">Tipo de Identificación:<select style="width:100%;" class="box-text" id="tipoIdentificacion">
+                                                        <option value="CC">Cédula</option>
+                                                        <option value="TI">Tarjeta de Identidad</option>
+                                                        <option value="PP">Pasaporte</option>
+                                                      </select>
+                        </td></tr> 
             <tr><td style="text-align: left;"><input type="text" name="nombres" id="nombres" required placeholder="Nombres"  class="box-text" onkeypress="javascript:return validar_texto(event)"></td></tr> 
             <tr><td style="text-align: left;"><input type="text" name="pApellido" id="pApellido" required placeholder="Primer Apellido"  class="box-text" onkeypress="javascript:return validar_texto(event)" ></td>      
             <tr><td style="text-align: left;"><input type="text" name="sApellido" id="sApellido"  placeholder="Segundo Apellido"  class="box-text" onkeypress="javascript:return validar_texto(event)" ></td></tr>
            <tr><td style="text-align: left;"><select style="width:100%;" class="box-text" id="sexo"><option default>Sexo</option><option>M</option><option>F</option></select></td></tr>
       </table>
-        </br></br>
+        <br><br>
            <table border="0" align="left" width="100%" >
                     <tr><td style="text-align: left; color:#c3c3c3; font-size:12px;">Fecha de Nacimiento:</td></tr>
             <tr><td style="text-align: left;"><input type="date" id="fNacimiento" required placeholder="Fecha de Nacimiento"  class="box-text" ></td></tr>
             <tr><td style="text-align: left;"><input type="number" id="telefono" required placeholder="Telefono"  class="box-text" onkeypress="javascript:return validarNro(event)" ></td></tr>
-            <tr><td style="text-align: left;"><input type="number" id="celular" required placeholder="Celular"  class="box-text" onkeypress="javascript:return validarNro(event)" ></td></tr>
             <tr><td style="text-align: left;"><input type="text" id="direccion" required placeholder="Direccion"  class="box-text" ></td></tr>
-            <tr><td style="text-align: left;"><input type="email" id="correo" required placeholder="Correo Electronico"  class="box-text" ></td></tr>
-            <tr>
-                <td align="left" width="40%" style="padding: 2px" ><input id="activarMedico" type="checkbox" />Médico</td>
-                    
-                </tr>
-            <tr><td style="text-align: left;"><select multiple="" id="servicios" class="box-text" >
-                        <?php foreach($servicios as $servicio){ ?>
-                        <option value="<?php echo $servicio->getIdServicio(); ?>"><?php echo $servicio->getNombre(); ?></option>
-                        <?php } ?>
-                    </select></td>
-            </tr>
             <tr><td style="text-align:right;"><button type="submit" class="button orange large"  >Guardar</button></td></tr>
         </table>
     </form>
@@ -374,17 +265,17 @@ function modificarPersona(){
             <th>Nombres</th>
             <th width="30%">Apellidos</th>
             <th width="5%">Sexo</th>
-            <th>Celular</th>
+            <th>Telefono</th>
             <th width="5%"></th>
             </thead>
             <tbody id="table">
                 <?php foreach($personas as $persona){ ?>
                 <tr class="recorrer" align="left">
-                    <td width="20%"><?php echo $persona->getIdPersona(); ?></td>
+                    <td width="20%"><?php echo $persona->getIdentificacion(); ?></td>
                     <td width="30%"><?php echo $persona->getNombres(); ?></td>
                     <td width="30%" ><?php echo $persona->getpApellido()." ".$persona->getsApellido(); ?></td>
                     <td width="5%"><?php echo $persona->getSexo(); ?></td>
-                    <td width="10%"><?php echo $persona->getCelular(); ?></td>
+                    <td width="10%"><?php echo $persona->getTelefono(); ?></td>
                     <td width="5%" style="text-align:right;"><buttom type="submit" class="button small red"  onclick="consultaPersona('<?php echo $persona->getIdPersona(); ?>');">...</buttom></td> 
             </tr>
             <?php } ?>
@@ -406,10 +297,20 @@ function modificarPersona(){
         <table width="100%">
             <tr>
                 <td>
-                    cedula:
+                    Identificación:
                 </td>
                 <td>
-                    <input class="box-text-disable" value="" id="idPersonas" type="text" disabled >
+                    <input class="box-text-disable" value="" id="identificacions" type="text" disabled >
+                </td>                          
+            </tr>
+            <tr>
+                <td>
+                    Tipo Identificación:
+                </td>
+                <td>
+                    <select id="tipoIdentificacions"><option value="CC">Cédula</option>
+                                                        <option value="TI">Tarjeta de Identidad</option>
+                                                        <option value="PP">Pasaporte</option></select>
                 </td>                          
             </tr>
             <tr>
@@ -462,26 +363,10 @@ function modificarPersona(){
             </tr>
             <tr>
                 <td>
-                    Celular:
-                </td>
-                <td>
-                    <input class="box-text" value="" id="celulars" type="number" >
-                </td>                          
-            </tr>
-            <tr>
-                <td>
                     Direccion:
                 </td>
                 <td>
                     <input class="box-text" value="" id="direccions" type="text" >
-                </td>                          
-            </tr>
-            <tr>
-                <td>
-                    Correo:
-                </td>
-                <td>
-                    <input  class="box-text" value="" id="correos" type="text"  >
                 </td>                          
             </tr>
            <tr><td align="right"><button type="submit" class="button red small" onclick="modificarPersona()">Modificar</button></td></tr>

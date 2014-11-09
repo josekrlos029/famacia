@@ -23,42 +23,55 @@
         <title>Administrador</title>
 
         <script>
-
+            $(document).ready(function(){
+                $("#titulo").html("<h1>Facturar</h1>");
+                $("#contenido").load("/famacia/administrador/factura");
+            });
+            
             function cargarRegistroPersona() {
                 $("#titulo").html("<h1>Gestion de Clientes</h1>");
-                $("#contenido").load("/palace/administrador/registroPersona");
-
-            }
-                function configuracionUsuario() {
-                $("#titulo").html("<h1>Configuracion de Usuario</h1>");
-                $("#contenido").load("/palace/administrador/configuracionUsuario");
+                $("#contenido").load("/famacia/administrador/registroPersona");
 
             }
             function cargarRegistroProducto() {
-                $("#contenido").load("/palace/administrador/inventarioProducto");
+                $("#contenido").load("/famacia/administrador/inventarioProducto");
                 $("#titulo").html("<h1>Inventario de Productos</h1>");
             }
             function cargarCitas() {
-                $("#contenido").load("/palace/administrador/registroCita");
+                $("#contenido").load("/famacia/administrador/registroCita");
                 $("#titulo").html("<h1>Gestion de Citas</h1>");
             }
             function cargarGestionEmpleado() {
-                $("#contenido").load("/palace/administrador/registroEmpleado");
+                $("#contenido").load("/famacia/administrador/registroEmpleado");
                 $("#titulo").html("<h1>Gestion de Empleados</h1>");
             }
             function cargarGestionServicio() {
-                $("#contenido").load("/palace/administrador/gestionServicio");
+                $("#contenido").load("/famacia/administrador/gestionServicio");
                 $("#titulo").html("<h1>Gestion de Servicios</h1>");
             }
 
             function cargarFactura() {
-                $("#contenido").load("/palace/administrador/factura");
+                $("#contenido").load("/famacia/administrador/factura");
                 $("#titulo").html("<h1>Facturar Servicio</h1>");
             }
             
             function cargarConsultas() {
-                $("#contenido").load("/palace/administrador/consultas");
+                $("#contenido").load("/famacia/administrador/consultas");
                 $("#titulo").html("<h1>Consultas</h1>");
+            }
+            
+            function cargarProveedores(){
+                
+                $("#contenido").load("/famacia/administrador/registroProveedor");
+                $("#titulo").html("<h1>Gestion de Proveedores</h1>");
+            
+            }
+            
+            function cargarLaboratorios(){
+                
+                $("#contenido").load("/famacia/administrador/registroLaboratorios");
+                $("#titulo").html("<h1>Gestion de Laboratorios</h1>");
+            
             }
 
 
@@ -69,7 +82,7 @@
     <body>
         <div id="menu">
             <div id="cont-title">
-                <a  href="/palace/administrador/usuarioAdministrador" ><h1><spam>Usuario</spam> | Administrador</h1></a>
+                <a  href="/famacia/administrador/usuarioAdministrador" ><h1><spam>Usuario</spam> | Administrador</h1></a>
                 <div id="hora">
                     <?php
 
@@ -79,24 +92,19 @@
             </div>
             <div style="margin-top:20px;"> 
                 <ul class="accordion">
-                    <li id="one" class="clientes"><a onclick="cargarRegistroPersona()" href="#">Clientes<span><?php echo count($personas); ?></span></a>
-                        <!-- <ul class="sub-menu">
-                             <li><a href="#"><em>01</em>Registrar Cliente<span</span></a></li>
-                             <li><a href="#"><em>02</em>Consultar Cliente<span></span></a></li> 
-                             <li><a href="#"><em>03</em>Modificar Cliente<span></span></a></li> 
-                         </ul>-->
-                    </li>
-
-                    <li id="three" class="citas"><a onclick="cargarCitas()" href="#">Citas<span>0</span></a>
-
-                    </li>
-                    <li id="six" class="empleados"><a onclick="cargarGestionEmpleado()" href="#">Empleados<span><?php echo count($empleados); ?></span></a></li>
-                    <li id="two" class="productos"><a onclick="cargarRegistroProducto()" href="#">Inventario de Productos<span><?php echo count($productos); ?></span></a>
-                    </li>
-                    <li id="five" class="servicio"><a onclick="cargarGestionServicio()" href="#">Servicios<span><?php echo count($servicios); ?></span></a></li>
+                    <?php if($_SESSION['idUsuario']==1){ ?>
                     <li id="six" class="factura"><a onclick="cargarFactura()" href="#">Facturar</a></li>
+                    <li id="one" class="clientes"><a onclick="cargarRegistroPersona()" href="#">Clientes<span><?php echo count($personas); ?></span></a></li>
+                    <li id="two" class="productos"><a onclick="cargarRegistroProducto()" href="#">Inventario de Productos<span><?php echo count($productos); ?></span></a></li>
+                    <li id="six" class="factura"><a onclick="cargarCompra()" href="#">Compras</a></li>
+                    <li id="six" class="empleados"><a onclick="cargarLaboratorios()" href="#">Laboratorios<span><?php echo count($laboratorios); ?></span></a></li>
+                    <li id="six" class="empleados"><a onclick="cargarProveedores()" href="#">Proveedores<span><?php echo count($proveedores); ?></span></a></li>
+                    <li id="six" class="empleados"><a onclick="cargarGestionEmpleado()" href="#">Farmaceuticos<span><?php echo count($empleados); ?></span></a></li>
                     <li id="seven" class="consulta"><a onclick="cargarConsultas()" href="#">Consultas</a></li>
-
+                    <?php }else{ ?>
+                    <li id="one" class="clientes"><a onclick="cargarRegistroPersona()" href="#">Clientes<span><?php echo count($personas); ?></span></a></li>
+                    <li id="six" class="factura"><a onclick="cargarFactura()" href="#">Facturar</a></li>
+                    <?php } ?>
                 </ul>
             </div> 
 
@@ -105,7 +113,7 @@
     <div id="cuerpo">
         <div id="menu-horizontal">
             <div id="titulo"></div>
-            <div id=cont-conf> <li id="" class="conf"><a onclick="configuracionUsuario()" href="#">Configuracion de Usuario</a></div>
+            <div id=cont-conf></div>
             <div id="cont-logo">
                 <h1>Droguería San Miguel</h1>
             </div>

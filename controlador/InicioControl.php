@@ -54,10 +54,10 @@ class InicioControl extends Controlador{
                 
                 foreach ($roles as $r){
                     
-                    if ($r["idRol"] == "001"){
-                        echo json_encode("/palace/administrador/usuarioAdministrador"); 
-                    }elseif ($r["idRol"] == "003"){
-                        echo json_encode("/palace/medico/usuarioMedico"); 
+                    if ($r["idRol"] == "A"){
+                        echo json_encode("/famacia/administrador/usuarioAdministrador"); 
+                    }elseif ($r["idRol"] == "F"){
+                        echo json_encode("/famacia/medico/usuarioFarmaceutico"); 
                     }
                     
                 }

@@ -21,6 +21,7 @@ Class Factura extends Modelo{
     private $fecha;
     private $hora;
     private $formaPago;
+    private $idFarmaceutico;
         
     public function getIdFactura() {
         return $this->idFactura;
@@ -62,7 +63,15 @@ Class Factura extends Modelo{
     public function setFormaPago($formaPago) {
         $this->formaPago = $formaPago;
     }
+    public function getIdFarmaceutico() {
+        return $this->idFarmaceutico;
+    }
 
+    public function setIdFarmaceutico($idFarmaceutico) {
+        $this->idFarmaceutico = $idFarmaceutico;
+    }
+
+    
     private function mapearFactura(Factura $factura, array $props) {
         if (array_key_exists('idFactura', $props)) {
             $factura->setIdFactura($props['idFactura']);
@@ -79,6 +88,9 @@ Class Factura extends Modelo{
         if (array_key_exists('formaPago', $props)) {
             $factura->setFormaPago($props['formaPago']);
         }
+        if (array_key_exists('idFarmaceutico', $props)) {
+            $factura->setIdFarmaceutico($props['idFarmaceutico']);
+        }
  
     }
       
@@ -88,19 +100,20 @@ Class Factura extends Modelo{
             ':idPersona' => $pro->getIdPersona(),
             ':fecha' => $pro->getFecha(),
             ':hora' => $pro->getHora(),
-            ':formaPago' => $pro->getFormaPago()
+            ':formaPago' => $pro->getFormaPago(),
+            ':idFarmaceutico' => $pro->getIdFarmaceutico()
         );
         return $parametros;
     }
 
         public function crearFactura(Factura $factura) {
-        $sql = "INSERT INTO factura (idPersona, fecha, hora, formaPago) VALUES ( :idPersona, :fecha, :hora, :formaPago)";
+        $sql = "INSERT INTO factura (idPersona, fecha, hora, formaPago, idFarmaceutico) VALUES ( :idPersona, :fecha, :hora, :formaPago, :idFarmaceutico)";
         $this->__setSql($sql);
         return $this->ejecutar2($this->getParametros($factura));
     }
     
     public function leerFacturaPorRangoFecha($inicio,$fin){
-        $sql = "SELECT f.idFactura, f.formaPago, f.hora, f.fecha, (SELECT sum(ds.precio) FROM detalles_servicio ds WHERE ds.idFactura=f.idFactura) as sumaServicios, (SELECT sum(dp.precioVenta*dp.cantidad) FROM detalles_producto dp WHERE dp.idFactura=f.idFactura) as sumaProductos FROM factura f WHERE f.fecha BETWEEN '".$inicio."' AND '".$fin."' GROUP BY f.idFactura ORDER BY f.fecha DESC ";
+        $sql = "SELECT p.nombres, p.pApellido, p.sApellido, f.idFactura, f.formaPago, f.hora, f.fecha, (SELECT sum(( dp.precioVenta + (dp.precioVenta * (dp.iva/100)) )*dp.cantidad) FROM detallefactura dp WHERE dp.idFactura=f.idFactura) as sumaProductos FROM factura f, persona p WHERE p.idPersona = f.idFarmaceutico AND f.fecha BETWEEN '".$inicio."' AND '".$fin."' GROUP BY f.idFactura ORDER BY f.fecha DESC ";
         $this->__setSql($sql);
         return $this->consultar($sql);
         
@@ -117,6 +130,13 @@ Class Factura extends Modelo{
             
         }
         return $factura;
+        
+        }
+        
+        public function leerComision($idPersona, $inicio, $fin){
+        $sql = "SELECT f.idFactura,  p.nombre, f.fecha, p.comision FROM producto p, persona per, detalleFactura df, factura f WHERE df.idFactura = f.idFactura AND f.idPersona = per.idPersona AND f.idFarmaceutico=".$idPersona." AND p.comision <> 0 AND f.fecha BETWEEN '".$inicio."' AND '".$fin."' ORDER BY f.fecha DESC";
+        $this->__setSql($sql);
+        return $this->consultar($sql);
         
         }
         

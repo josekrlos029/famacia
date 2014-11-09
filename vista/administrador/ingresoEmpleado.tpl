@@ -16,7 +16,7 @@
 
         $.ajax({
             type: "POST",
-            url: "/palace/administrador/tablaIngresoEmpleado",
+            url: "/famacia/administrador/tablaIngresoEmpleado",
             data: data
         }).done(function(msg) {
 
@@ -50,7 +50,11 @@
     <table  width="100%">
         <tr>
             
-            <td width="40%"><input type="text" class="box-text" id="idPersona" placeholder="Cedula empleado"></td>
+                    <td width="40%"><select class="box-text" id="idPersona">
+                                        <?php foreach($empleados as $e){ ?>
+                                        <option value="<?php echo $e->getIdPersona(); ?>"><?php echo $e->getNombres()." ".$e->getPApellido(); ?></option>
+                                        <?php } ?>
+                                    </select></td>
             <td align="right" style="text-align:right;"><button type="submit" class="button orange large" onclick="cargarTabla()" >Buscar</button></td>
         </tr>
     </table>

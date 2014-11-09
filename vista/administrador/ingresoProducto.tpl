@@ -1,14 +1,39 @@
 <script>
-    function cargarTabla(){
+    
+    $("#codigo").keypress(function (e){
+        
+                var key = e.keyCode || e.which;
+                if (key === 13) {
+                    codigoBarras();
+                }
+        });
+        
+    function codigoBarras() {
+
+        var codigo = $("#codigo").val();
+
+        $.ajax({
+            type: "POST",
+            url: "/famacia/administrador/consultarProductoByCodigo",
+            data: { codigo: codigo }
+        })
+                .done(function (msg) {
+                    var json = eval("(" + msg + ")");
+
+                    $("#producto").val(json.idProducto);
+                });
+    }
+    
+    function cargarTabla() {
         var x = $("#mensaje");
         cargando();
-        x.html ("<p>Cargando...</p>");
+        x.html("<p>Cargando...</p>");
         x.show("speed");
-        
+
         var idProducto = $("#producto").val();
         var inicio = $("#inicio").val();
         var fin = $("#fin").val();
-        var data = { 
+        var data = {
             idProducto: idProducto,
             inicio: inicio,
             fin: fin
@@ -16,52 +41,57 @@
 
         $.ajax({
             type: "POST",
-            url: "/palace/administrador/tablaIngresoProducto",
+            url: "/famacia/administrador/tablaIngresoProducto",
             data: data
-        }).done(function(msg) {
+        }).done(function (msg) {
 
             //var json = eval("(" + msg + ")");
             $("#cargaTabla").html(msg);
             ocultar();
-            
+
         });
 
 
     }
-    
-    function validarNro(e) {
-           var key;
-            if(window.event) // IE
-	         {
-	             key = e.keyCode;
-	         }
-             else if(e.which) // Netscape/Firefox/Opera
-	         {
-	            key = e.which;
-	         }
 
-                if (key < 48 || key > 57)
-                {
-                  if(key == 46 || key == 8) // Detectar . (punto) y backspace (retroceso)
-                { return true; }
-             else 
-               { return false; }
-               }
-              return true;
-             }
+    function validarNro(e) {
+        var key;
+        if (window.event) // IE
+        {
+            key = e.keyCode;
+        }
+        else if (e.which) // Netscape/Firefox/Opera
+        {
+            key = e.which;
+        }
+
+        if (key < 48 || key > 57)
+        {
+            if (key == 46 || key == 8) // Detectar . (punto) y backspace (retroceso)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 
     function validar_texto(e) {
-           tecla = (document.all) ? e.keyCode : e.which;
+        tecla = (document.all) ? e.keyCode : e.which;
 
-            //Tecla de retroceso para borrar, siempre la permite
-             if (tecla==8) return true; 
+        //Tecla de retroceso para borrar, siempre la permite
+        if (tecla == 8)
+            return true;
 
-             // Patron de entrada, en este caso solo acepta letras
-                 patron =/[A-Za-z\s]/; 
+        // Patron de entrada, en este caso solo acepta letras
+        patron = /[A-Za-z\s]/;
 
-                   tecla_final = String.fromCharCode(tecla);
-                  return patron.test(tecla_final); 
-        } 
+        tecla_final = String.fromCharCode(tecla);
+        return patron.test(tecla_final);
+    }
 </script>
 <div  id="overlay"></div>
 <div  id="mensaje">
@@ -72,7 +102,7 @@
 
 </div>
 <div style=" margin-left: 5%; margin-top: 5%">
-    
+
     <h2>Ingreso por producto</h2><br>
     <h3>Ingrese el rango de fecha que desea consultar</h3><br>
     <table width="100%">
@@ -85,15 +115,20 @@
     </table>
     <table width="100%">
         <tr>
-            <td width="18%" align="right">Producto:</td>
-            <td> 
-                <select id="producto" class="box-text">
+            <td align="left">Producto:</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td style="margin-left: 10px"><input type="text" id="codigo" placeholder="Codigo Barras" class="box-text" style="margin-left: 10px"/></td>
+            <td><select id="producto" class="box-text" >
                     <?php foreach($productos as $pro){ ?>
                         <option value="<?php echo $pro->getIdProducto(); ?>"><?php echo $pro->getNombre();?></option>
                     <?php } ?>
-                </select>
-            </td>    
+                </select></td>
+        </tr>
+        <tr>
             <td style="text-align:right;"><button type="submit" class="button orange large" onclick="cargarTabla()">Buscar</button></td>
+            <td></td>
         </tr>
     </table>
     <div id="cargaTabla"></div>

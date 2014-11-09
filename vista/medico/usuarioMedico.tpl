@@ -23,24 +23,24 @@
             
            function cargarPaciente(){
                $("#titulo").html("<h1>Informaciòn de pacientes</h1>");
-               $("#contenido").load("/palace/medico/paciente");
+               $("#contenido").load("/famacia/medico/paciente");
                
            }
            
            function cargarMedicamentos(){
-               $("#contenido").load("/palace/medico/medicamentos");
+               $("#contenido").load("/famacia/medico/medicamentos");
                $("#titulo").html("<h1>Informacion de Medicamentos</h1>");
            }
            function cargarCitas(){
-               $("#contenido").load("/palace/administrador/registroCita");
+               $("#contenido").load("/famacia/administrador/registroCita");
                $("#titulo").html("<h1>Gestion de Citas</h1>");
            }
            function cargarHistorial(){
-               $("#contenido").load("/palace/medico/historial");
+               $("#contenido").load("/famacia/medico/historial");
                $("#titulo").html("<h1>Historial medico</h1>");
            }
            function cargarRegistroPersona(){
-               $("#contenido").load("/palace/administrador/registroPersona");
+               $("#contenido").load("/famacia/administrador/registroPersona");
            }
            
             

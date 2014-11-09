@@ -28,7 +28,7 @@ $('#filter').keyup(function(){
 
         $.ajax({
             type: "POST",
-            url: "/palace/administrador/consultarServicio",
+            url: "/famacia/administrador/consultarServicio",
             data: data
         }).done(function(msg) {
 
@@ -69,7 +69,7 @@ $("#form").submit(function(){
         
         $.ajax({
                       type: "POST",
-                      url: "/palace/administrador/registrarServicio",
+                      url: "/famacia/administrador/registrarServicio",
                       data: servicio
                   })
                   .done(function(msg) {
@@ -124,7 +124,7 @@ $("#form").submit(function(){
                 
         
                       type: "POST",
-                      url: "/palace/administrador/modificarServicio",
+                      url: "/famacia/administrador/modificarServicio",
                       data: servicio
                   })
                   .done(function(msg) {

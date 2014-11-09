@@ -17,18 +17,14 @@ Class IngresoProducto extends Modelo{
     }
     
     private $idIngreso;
-    private $idProveedor;
     private $idProducto;
+    private $idCompra;
     private $cantidad;
-    private $fecha;
+    private $fechaVencimiento;
     private $precio;
     
     public function getIdIngreso() {
         return $this->idIngreso;
-    }
-
-    public function getIdProveedor() {
-        return $this->idProveedor;
     }
 
     public function getIdProducto() {
@@ -39,20 +35,12 @@ Class IngresoProducto extends Modelo{
         return $this->cantidad;
     }
 
-    public function getFecha() {
-        return $this->fecha;
-    }
-
     public function getPrecio() {
         return $this->precio;
     }
     
     public function setIdIngreso($idIngreso) {
         $this->idIngreso = $idIngreso;
-    }
-
-    public function setIdProveedor($idProveedor) {
-        $this->idProveedor = $idProveedor;
     }
 
     public function setIdProducto($idProducto) {
@@ -63,21 +51,33 @@ Class IngresoProducto extends Modelo{
         $this->cantidad = $cantidad;
     }
 
-    public function setFecha($fecha) {
-        $this->fecha = $fecha;
-    }
-
     public function setPrecio($precio) {
         $this->precio = $precio;
     }
-
     
-    private function mapearPedido(IngresoProducto $producto, array $props) {
+    function getFechaVencimiento() {
+        return $this->fechaVencimiento;
+    }
+
+    function setFechaVencimiento($fechaVencimiento) {
+        $this->fechaVencimiento = $fechaVencimiento;
+    }
+
+    function getIdCompra() {
+        return $this->idCompra;
+    }
+
+    function setIdCompra($idCompra) {
+        $this->idCompra = $idCompra;
+    }
+
+        
+    private function mapearIngreso(IngresoProducto $producto, array $props) {
         if (array_key_exists('idIngreso', $props)) {
             $producto->setIdIngreso($props['idIngreso']);
         }
-        if (array_key_exists('idProveedor', $props)) {
-            $producto->setIdProveedor($props['idProveedor']);
+        if (array_key_exists('idCompra', $props)) {
+            $producto->setIdCompra($props['idCompra']);
         }
         if (array_key_exists('idProducto', $props)) {
             $producto->setIdProducto($props['idProducto']);
@@ -85,8 +85,8 @@ Class IngresoProducto extends Modelo{
          if (array_key_exists('cantidad', $props)) {
             $producto->setCantidad($props['cantidad']);
         }
-         if (array_key_exists('fecha', $props)) {
-            $producto->setFecha($props['fecha']);
+        if (array_key_exists('fechaVencimiento', $props)) {
+            $producto->setFechaVencimiento($props['fechaVencimiento']);
         }
         if (array_key_exists('precio', $props)) {
             $producto->setPrecio($props['precio']);
@@ -97,10 +97,10 @@ Class IngresoProducto extends Modelo{
     private function getParametros(IngresoProducto $pro){
               
         $parametros = array(
-            ':idProveedor' => $pro->getIdProveedor(),
+            ':idCompra' => $pro->getIdCompra(),
             ':idProducto' => $pro->getIdProducto(),
             ':cantidad' => $pro->getCantidad(),
-            ':fecha' => $pro->getFecha(),
+            ':fechaVencimiento' => $pro->getFechaVencimiento(),
             ':precio' => $pro->getPrecio()
         );
         return $parametros;
@@ -108,19 +108,38 @@ Class IngresoProducto extends Modelo{
 
     
     
-public function crearProducto(IngresoProducto $producto) {
-        $sql = "INSERT INTO ingreso_producto (idProveedor, idProducto, cantidad, fecha, precio) VALUES (:idProveedor, :idProducto, :cantidad, :fecha, :precio)";
+    public function crearProducto(IngresoProducto $producto) {
+        $sql = "INSERT INTO ingresoproducto (idCompra, idProducto, cantidad, fechaVencimiento, precio) VALUES (:idCompra, :idProducto, :cantidad, :fechaVencimiento, :precio)";
         $this->__setSql($sql);
         $this->ejecutar($this->getParametros($producto));
     }
+    
+    public function eliminarProducto($idIngreso) {
+        $sql = "DELETE FROM ingresoproducto WHERE idIngreso=:idIngreso";
+        $this->__setSql($sql);
+        $this->ejecutar(array(":idIngreso"=>$idIngreso));
+    }
 
+    public function leerIngresoPorId($idIngreso){
+        $sql = "SELECT ip.* FROM ingresoproducto ip, producto p WHERE ip.idProducto=p.idProducto AND ip.idIngreso=".$idIngreso;
+        $this->__setSql($sql);
+        return $this->consultar($sql);
+        
+        }
+    
     public function leerIngresoPorRangoFecha($inicio,$fin){
-        $sql = "SELECT * FROM ingreso_producto ip, producto p WHERE ip.idProducto=p.idProducto AND ip.fechaIngreso BETWEEN '".$inicio."' AND '".$fin."' ORDER BY ip.fechaIngreso DESC ";
+        $sql = "SELECT * FROM ingresoproducto ip, producto p WHERE ip.idProducto=p.idProducto AND ip.fecha BETWEEN '".$inicio."' AND '".$fin."' ORDER BY ip.fecha DESC ";
+        $this->__setSql($sql);
+        return $this->consultar($sql);
+        
+        }
+        
+        public function leerIngresoPorRangoFechaProducto($inicio,$fin, $idProducto){
+        $sql = "SELECT * FROM ingresoproducto ip, producto p WHERE ip.idProducto=p.idProducto AND p.idProducto=".$idProducto." AND ip.fecha BETWEEN '".$inicio."' AND '".$fin."' ORDER BY ip.fecha DESC ";
         $this->__setSql($sql);
         return $this->consultar($sql);
         
         }
         
 }
-
 ?>

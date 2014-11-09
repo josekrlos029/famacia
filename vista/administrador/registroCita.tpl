@@ -27,7 +27,7 @@
         
         $.ajax({
             type: "POST",
-            url: "/palace/administrador/tablaCitas",
+            url: "/famacia/administrador/tablaCitas",
             data: data
         }).done(function(msg) {
             $("#cargaTabla").html(msg);
@@ -39,7 +39,7 @@
     function buscar() {
 
         var idServicio = $("#servicio").val();
-        $("#consulta").load("/palace/administrador/consultarPersonaPorServicio/" + idServicio);
+        $("#consulta").load("/famacia/administrador/consultarPersonaPorServicio/" + idServicio);
 
     }
     
@@ -73,7 +73,7 @@
         
         $.ajax({
             type: "POST",
-            url: "/palace/administrador/guardarCita",
+            url: "/famacia/administrador/guardarCita",
             data: data
         }).done(function(msg) {
 
@@ -106,7 +106,7 @@
 
         $.ajax({
             type: "POST",
-            url: "/palace/administrador/disponibilidadServidor",
+            url: "/famacia/administrador/disponibilidadServidor",
             data: data
         }).done(function(msg) {
 

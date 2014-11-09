@@ -20,7 +20,7 @@
           
             $.ajax({
                 type: "POST",
-                url: "/palace/administrador/listarServidores/"+servicio,
+                url: "/famacia/administrador/listarServidores/"+servicio,
                 data: { }
               })
                 .done(function( msg ) {

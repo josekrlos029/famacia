@@ -33,7 +33,7 @@ class Controlador {
              
             if (!isset($_SESSION['idUsuario'])) {
                 
-                header("Location: /palace");
+                header("Location: /famacia");
                 return false;
             }else{
                 return true;

@@ -16,7 +16,7 @@
 
         $.ajax({
             type: "POST",
-            url: "/palace/administrador/tablaIngresoServicio",
+            url: "/famacia/administrador/tablaIngresoServicio",
             data: data
         }).done(function(msg) {
 

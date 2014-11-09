@@ -126,8 +126,8 @@ class Persona extends Modelo {
         if (array_key_exists('sexo', $props)) {
             $persona->setSexo($props['sexo']);
         }
-        if (array_key_exists('fNacimiento', $props)) {
-            $persona->setFNacimiento(self::crearFecha($props['fNacimiento']));
+        if (array_key_exists('cumpleanios', $props)) {
+            $persona->setFNacimiento(self::crearFecha($props['cumpleanios']));
         }
         if (array_key_exists('telefono', $props)) {
             $persona->setTelefono($props['telefono']);
@@ -141,14 +141,30 @@ class Persona extends Modelo {
     private function getParametros(Persona $per) {
 
         $parametros = array(
-            ':idPersona' => $per->getIdPersona(),
             ':identificacion' => $per->getIdentificacion(),
             ':tipoIdentificacion' => $per->getTipoIdentificacion(),
             ':nombres' => $per->getNombres(),
             ':pApellido' => $per->getPApellido(),
             ':sApellido' => $per->getSApellido(),
             ':sexo' => $this->getSexo(),
-            ':fNacimiento' => $per->getFNacimiento(),
+            ':cumpleanios' => $per->getFNacimiento(),
+            ':telefono' => $per->getTelefono(),
+            ':direccion' => $per->getDireccion()
+            
+        );
+        return $parametros;
+    }
+    
+    private function getParametrosWithId(Persona $per) {
+
+        $parametros = array(
+            ':identificacion' => $per->getIdentificacion(),
+            ':tipoIdentificacion' => $per->getTipoIdentificacion(),
+            ':nombres' => $per->getNombres(),
+            ':pApellido' => $per->getPApellido(),
+            ':sApellido' => $per->getSApellido(),
+            ':sexo' => $this->getSexo(),
+            ':cumpleanios' => $per->getFNacimiento(),
             ':telefono' => $per->getTelefono(),
             ':direccion' => $per->getDireccion()
             
@@ -157,9 +173,9 @@ class Persona extends Modelo {
     }
 
     public function crearPersona(Persona $persona) {
-        $sql = "INSERT INTO persona (idPersona, identificacion, tipoIdentificacion, nombres, pApellido, sApellido, sexo, fNacimiento, telefono, direccion) VALUES ( :idPersona, :identificacion, :tipoIdentificacion, :nombres, :pApellido, :sApellido, :sexo, :fNacimiento, :telefono, :celular, :direccion, :correo)";
+        $sql = "INSERT INTO persona (identificacion, tipoIdentificacion, nombres, pApellido, sApellido, sexo, cumpleanios, telefono, direccion) VALUES ( :identificacion, :tipoIdentificacion, :nombres, :pApellido, :sApellido, :sexo, :cumpleanios, :telefono, :direccion)";
         $this->__setSql($sql);
-        $this->ejecutar($this->getParametros($persona));
+        return $this->ejecutar2($this->getParametros($persona));
     }
 
     public function leerPersonas() {
@@ -176,7 +192,7 @@ class Persona extends Modelo {
     }
 
     public function leerPersonasPorRol($idRol) {
-        $sql = "SELECT persona.* FROM persona INNER JOIN rol_persona ON (persona.idPersona = rol_persona.idPersona) AND rol_persona.idRol='" . $idRol . "'";
+        $sql = "SELECT persona.* FROM persona INNER JOIN rolpersona ON (persona.idPersona = rolpersona.idPersona) AND rolpersona.idRol='" . $idRol . "'";
         $this->__setSql($sql);
         $resultado = $this->consultar($sql);
         $pers = array();
@@ -189,7 +205,7 @@ class Persona extends Modelo {
     }
 
     public function leerEmpleados() {
-        $sql = "SELECT p.* FROM persona p, rol_persona rp WHERE p.idPersona = rp.idPersona AND rp.idRol IN ('002','003')";
+        $sql = "SELECT p.* FROM persona p, rolpersona rp WHERE p.idPersona = rp.idPersona AND rp.idRol IN ('002','003')";
         $this->__setSql($sql);
         $resultado = $this->consultar($sql);
         $pers = array();
@@ -215,7 +231,7 @@ class Persona extends Modelo {
     }
 
     public function leerPorRol($idRol) {
-        $sql = "SELECT p.idPersona, p.nombres, p.pApellido, p.sApellido, p.sexo, p.fNacimiento, p.telefono, p.celular, p.direccion, p.correo  FROM persona p, rol_persona r WHERE p.idPersona=r.idPersona AND r.idRol='" . $idRol . "'";
+        $sql = "SELECT p.idPersona, p.nombres, p.pApellido, p.sApellido, p.sexo, p.cumpleanios, p.telefono, p.direccion FROM persona p, rolpersona r WHERE p.idPersona=r.idPersona AND r.idRol='" . $idRol . "'";
         $resultado = $this->consultar($sql);
         $pers = array();
         foreach ($resultado as $fila) {
@@ -227,7 +243,7 @@ class Persona extends Modelo {
     }
 
     public function leerPorServicio($idServicio) {
-        $sql = "SELECT p.idPersona, p.nombres, p.pApellido, p.sApellido, p.sexo, p.fNacimiento, p.telefono, p.celular, p.direccion, p.correo  FROM persona p, servicio_empleado se  WHERE p.idPersona=se.idPersona AND se.idServicio=" . $idServicio;
+        $sql = "SELECT p.idPersona, p.nombres, p.pApellido, p.sApellido, p.sexo, p.cumpleanios, p.telefono, p.celular, p.direccion, p.correo  FROM persona p, servicio_empleado se  WHERE p.idPersona=se.idPersona AND se.idServicio=" . $idServicio;
         $resultado = $this->consultar($sql);
         $pers = array();
         foreach ($resultado as $fila) {
@@ -239,7 +255,7 @@ class Persona extends Modelo {
     }
 
     public function actualizarPersona(Persona $persona) {
-        $sql = "UPDATE persona SET nombres=:nombres, pApellido=:pApellido, sApellido=:sApellido, fNacimiento=:fNacimiento, celular=:celular, sexo=:sexo, telefono=:telefono, correo=:correo, direccion=:direccion  WHERE idPersona=:idPersona";
+        $sql = "UPDATE persona SET tipoIdentificacion=:tipoIdentificacion, nombres=:nombres, pApellido=:pApellido, sApellido=:sApellido, cumpleanios=:cumpleanios, sexo=:sexo, telefono=:telefono, direccion=:direccion  WHERE identificacion=:identificacion";
         $this->__setSql($sql);
         $this->ejecutar($this->getParametros($persona));
     }
@@ -252,8 +268,21 @@ class Persona extends Modelo {
     }
 
     public function leerPorId($id) {
-        $sql = "SELECT idPersona, nombres, pApellido, sApellido, sexo, fNacimiento, telefono, celular, direccion, correo FROM persona ";
+        $sql = "SELECT idPersona, identificacion, tipoIdentificacion, nombres, pApellido, sApellido, sexo, cumpleanios, telefono, direccion FROM persona ";
         $sql .= "WHERE idPersona='" . $id . "'";
+        $this->__setSql($sql);
+        $resultado = $this->consultar($sql);
+        $persona = NULL;
+        foreach ($resultado as $fila) {
+            $persona = new Persona();
+            $this->mapearPersona($persona, $fila);
+        }
+        return $persona;
+    }
+    
+    public function leerPorCedula($id) {
+        $sql = "SELECT idPersona, identificacion, tipoIdentificacion, nombres, pApellido, sApellido, sexo, cumpleanios, telefono, direccion FROM persona ";
+        $sql .= "WHERE identificacion='" . $id . "'";
         $this->__setSql($sql);
         $resultado = $this->consultar($sql);
         $persona = NULL;

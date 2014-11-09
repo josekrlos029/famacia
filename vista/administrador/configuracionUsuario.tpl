@@ -25,7 +25,7 @@
 
         $.ajax({
             type: "POST",
-            url: "/palace/administrador/modificarUsuario",
+            url: "/famacia/administrador/modificarUsuario",
             data: usuario
         })
                 .done(function(msg) {

@@ -1,23 +1,16 @@
 <script>
             function cargarIngresoTotal() {
-                $("#cont-consulta").load("/palace/administrador/ingresoTotal");
+                $("#cont-consulta").load("/famacia/administrador/ingresoTotal");
                 $("#titulo").html("<h1>Consultas</h1>");
             }
-            
-            
             
             function cargarIngresoEmpleado() {
-                $("#cont-consulta").load("/palace/administrador/ingresoEmpleado");
-                $("#titulo").html("<h1>Consultas</h1>");
-            }
-            
-            function cargarIngresoServicio() {
-                $("#cont-consulta").load("/palace/administrador/ingresoServicio");
+                $("#cont-consulta").load("/famacia/administrador/ingresoEmpleado");
                 $("#titulo").html("<h1>Consultas</h1>");
             }
             
             function cargarIngresoProducto() {
-                $("#cont-consulta").load("/palace/administrador/ingresoProducto");
+                $("#cont-consulta").load("/famacia/administrador/ingresoProducto");
                 $("#titulo").html("<h1>Consultas</h1>");
             }
 </script>
@@ -37,8 +30,8 @@
                     
                      <tr><td style="text-align: left;"><a onclick="cargarIngresoTotal()" href="#">Ingresos totales</a></td></tr> 
                      <tr><td style="text-align: left;"><a onclick="cargarIngresoEmpleado()" href="#">Ingresos por empleado</a></td>      
-                     <tr><td style="text-align: left;"><a onclick="cargarIngresoServicio()" href="#">Ingresos por servicio</a></td></tr>
                      <tr><td style="text-align: left;"><a onclick="cargarIngresoProducto()" href="#">Ingresos por producto</a></td></tr>
+                     
                      
                     
 

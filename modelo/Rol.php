@@ -11,10 +11,9 @@ class Rol extends Modelo{
     private $idRol;
     private $nombre;
     
-    private $administrador ="001";
-    private $medico = "003";
-    private $empleado = "002";
-    private $cliente = "004";
+    private $administrador ="A";
+    private $farmaceutico = "F";
+    private $cliente = "C";
     
     public function getIdRol() {
         return $this->idRol;
@@ -35,22 +34,17 @@ class Rol extends Modelo{
     public function getAdministrador() {
         return $this->administrador;
     }
-
-    public function getMedico() {
-        return $this->medico;
+    
+    public function getFarmaceutico() {
+        return $this->farmaceutico;
     }
-
-    public function getEmpleado() {
-        return $this->empleado;
-    }
-
+    
     public function getCliente() {
         return $this->cliente;
     }
 
-    
   public function leerRoles($idPersona){
-        $sql =  "SELECT rp.idRol, r.nombre FROM rol_persona rp, rol r WHERE rp.idRol= r.idRol AND rp.idPersona='".$idPersona."'";
+        $sql =  "SELECT rp.idRol, r.nombre FROM rolpersona rp, rol r WHERE rp.idRol= r.idRol AND rp.idPersona='".$idPersona."'";
         $this->__setSql($sql);
         return $this->consultar($sql);
         
@@ -64,7 +58,7 @@ class Rol extends Modelo{
     }
     
     public function rolPersona($idPersona){
-      $sql =  "SELECT  idRol FROM rol_persona WHERE idPersona=".$idPersona;
+      $sql =  "SELECT  idRol FROM rolpersona WHERE idPersona=".$idPersona;
        $this->__setSql($sql);
        $resultado = $this->consultar($sql);
         $rol=NULL;
@@ -89,7 +83,7 @@ private function mapearRol(Rol $rol, array $props){
 
 
     public function crearRolPersona($idPersona, $idRol){
-        $sql = "INSERT INTO rol_persona (idPersona, idRol) VALUES (:idPersona, :idRol)";
+        $sql = "INSERT INTO rolpersona (idPersona, idRol) VALUES (:idPersona, :idRol)";
         $this->__setSql($sql);
         $this->ejecutar(array(":idPersona"=>$idPersona,":idRol"=>$idRol));
         

@@ -12,6 +12,7 @@ abstract class Modelo {
      * @var Db
      */
     protected $db;
+    
     /**
      * Objeto de tipo string para manejo de las consultas en el modelo.
      * @var string

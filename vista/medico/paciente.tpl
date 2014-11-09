@@ -1,7 +1,7 @@
 
    <script>
        function cargarHistorial(){
-               $("#contenido").load("/palace/medico/historial");
+               $("#contenido").load("/famacia/medico/historial");
                $("#titulo").html("<h1>Historial medico</h1>");
            }
    </script>    

@@ -1,180 +1,250 @@
 <html>
 
     <script>
+        
+        function calcularPresentacion(){
+            
+            var idProducto = $("#producto").val();
 
-        function quitarProducto(idProducto){
-            $("#tProductos .rc").each(function(index) {
-                
-                var band = false; var precio; var total;
-                $(this).children("td").each(function(index2) {
-                    switch (index2) {
-                        case 0:
-                            if($(this).text()== idProducto){
-                                band=true;
-                            }
-                            break;
-                        case 4:
-                            precio = $(this).text();
-                    }
-                    
-                });
-                if (band==true){
-                    $(this).remove();
-                    total = parseInt($("#total").val());
-                    precio = parseInt(precio);
-                    $("#total").val(total- precio);
-                }
-                    
-            });
+            $.ajax({
+                type: "POST",
+                url: "/administrador/consultarProducto2",
+                data: { idProducto: idProducto }
+            })
+                    .done(function (msg) {
+                        var json = eval("(" + msg + ")");
+                        
+                        var presentacion = $("#presentacion  option:selected").html();
+                        var arrayPresentacion = presentacion.split("/");
+                        
+                        var cantidad = parseInt(arrayPresentacion[1]);
+                        
+                        var precio = parseInt(json.precio);
+                        
+                        $("#precioUnid").val(parseInt(precio.toFixed(2)) * cantidad);
+                        var total = precio + (precio.toFixed(2) * (parseFloat(json.iva).toFixed(2) / 100) * cantidad);
+                        $("#precioTotal").val(parseInt(json.unidadPrincipal) * total.toFixed(2));
+                        $("#iva").val(json.iva);
+                        $("#cantidad").val(0);
+                        $("#codigo").val(json.codigoBarras);
+                        $("#pp").val(json.precioFabrica);
+                        $("#unidades").val(json.unidades);
+                        $("#cantidad").focus();
+                    });
         }
         
-        function quitarServicio(idServicio){
-            $("#tServicios .rs").each(function(index) {
-                var band = false; var precio; var total;
+        function seleccionar(obj) {
+            if (obj.nodeName.toLowerCase() == 'textarea' || (obj.nodeName.toLowerCase() == 'input' && obj.type == 'text')) {
+                obj.select();
+                return;
+            }
+            if (window.getSelection) {
+                var sel = window.getSelection();
+                var range = document.createRange();
+                range.selectNodeContents(obj);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+            else if (document.selection) {
+                document.selection.empty();
+                var range = document.body.createTextRange();
+                range.moveToElementText(obj);
+                range.select();
+            }
+        }
 
-                $(this).children("td").each(function(index2) {
+        $(document).ready(function () {
+
+            $("#idPersona").focus();
+
+        });
+        $("#codigo").keypress(function (e) {
+
+            var key = e.keyCode || e.which;
+            if (key === 13) {
+                codigoBarras();
+            }
+        });
+
+        $("#producto").keypress(function (e) {
+
+            var key = e.keyCode || e.which;
+            if (key === 13) {
+                agregarProducto();
+            }
+        });
+
+        $("#cantidad").keyup(function (e) {
+
+            var key = e.keyCode || e.which;
+            if (key === 13) {
+                $("#precioUnid").focus();
+            } else {
+                
+                var unidades = parseFloat($("#unidades").val());
+                var presentacion = $("#presentacion  option:selected").html();
+                var arrayPresentacion = presentacion.split("/");
+                var cantidadPresentacion = parseInt(arrayPresentacion[1]);
+                var cantidad = parseInt($("#cantidad").val());
+                
+                if(unidades < (cantidadPresentacion*cantidad)){
+                    alert("Esta cantidad no está disponible en el inventario");
+                    $("#cantidad").val(0);
+                }else{
+                    calcularTotal();
+                }
+                
+                
+            }
+        });
+        
+        $("#precioUnid").keyup(function (e) {
+
+            var key = e.keyCode || e.which;
+            if (key === 13) {
+                agregarProducto();
+            } else {
+
+                calcularTotal();
+
+            }
+        });
+
+        function quitarProducto(idProducto) {
+            $("#tProductos .rc").each(function (index) {
+
+                var band = false;
+                var precio;
+                var total;
+                $(this).children("td").each(function (index2) {
                     switch (index2) {
                         case 0:
-                             if($(this).text()== idServicio){
-
+                            if ($(this).text() == idProducto) {
                                 band = true;
                             }
                             break;
                         case 4:
-                            precio = $(this).text();    
-                                                
+                            precio = $(this).text();
                     }
-                   
+
                 });
-               if (band==true){
+                if (band == true) {
                     $(this).remove();
                     total = parseInt($("#total").val());
                     precio = parseInt(precio);
-                    
-                    $("#total").val(total- precio);
-                } 
+                    $("#total").val(total - precio);
+                }
+
             });
+            $("#codigo").focus();
         }
 
         function guardar() {
-            
-            if($("#idPersona").val()== null || $("#idPersona").val()== "" || $("#nombre").val()== "No existe en la Base de Datos"){
+
+            if ($("#idPersona").val() == null || $("#idPersona").val() == "" || $("#nombre").val() == "No existe en la Base de Datos") {
                 alert("Por Favor seleccione un Cliente Valido");
-            }else{
-            
-            var x = $("#mensaje");
-            cargando();
-            x.html ("<p>Cargando...</p>");
-            x.show("speed");
-            
-            var arregloServicios = new Array();
-            var i =0;
-            $("#tServicios .rs").each(function(index) {
-                var idServicio, nombreServicio, nombreServidor, idPersona, precio;
+            } else {
 
-                $(this).children("td").each(function(index2) {
-                    switch (index2) {
-                        case 0:
-                            idServicio = $(this).text();
-                            break;
-                        case 1:
-                            nombreServicio = $(this).text();
-                            break;
-                        case 2:
-                            nombreServidor = $(this).text();
-                            break;
-                        case 3:
-                            idPersona = $(this).text();
-                            break;
-                        case 4:
-                            precio = $(this).text();
-                            break;
-                        
+                var x = $("#mensaje");
+                cargando();
+                x.html("<p>Cargando...</p>");
+                x.show("speed");
+
+                var arregloProductos = new Array();
+                var i = 0;
+                $("#tProductos .rc").each(function (index) {
+                    var idProducto, nombreProducto, cantidad, precio, subtotal, iva, idPresentacion;
+
+                    $(this).children("td").each(function (index2) {
+                        switch (index2) {
+                            case 0:
+                                idProducto = $(this).text();
+                                break;
+                            case 1:
+                                nombreProducto = $(this).text();
+                                break;
+                            case 3:
+                                cantidad = $(this).text();
+                                break;
+                            case 4:
+                                precio = $(this).text();
+                                break;
+                            case 5:
+                                iva = $(this).text();
+                                break;
+                            case 6:
+                                subtotal = $(this).text();
+                                break;
+                            case 8:
+                                idPresentacion = $(this).text();
+                                break;
+
+                        }
+                        $(this).css("background-color", "#ECF8E0");
+                    });
+                    cantidad = parseInt(cantidad);
+                    if (iva == "") {
+                        iva = 0;
+                    } else {
+                        iva = parseFloat(iva);
                     }
-                    $(this).css("background-color", "#ECF8E0");
-                });
-                arregloServicios[i] = new Array(idServicio, idPersona, precio);
-                i++;
-            });
 
-            var arregloProductos = new Array();
-            i =0;
-            $("#tProductos .rc").each(function(index) {
-                var idProducto, nombreProducto, cantidad, precio, subtotal;
-
-                $(this).children("td").each(function(index2) {
-                    switch (index2) {
-                        case 0:
-                            idProducto = $(this).text();
-                            break;
-                        case 1:
-                            nombreProducto = $(this).text();
-                            break;
-                        case 2:
-                            cantidad = $(this).text();
-                            break;
-                        case 3:
-                            precio = $(this).text();
-                            break;
-                        case 4:
-                            subtotal = $(this).text();
-                            break;
-                        
-                    }
-                    $(this).css("background-color", "#ECF8E0");
+                    arregloProductos[i] = new Array(idProducto, cantidad, iva, precio, idPresentacion);
+                    i++;
                 });
-                arregloProductos[i] = new Array(idProducto, cantidad, precio);
-                i++;
-            });
-            var servicios = JSON.stringify(arregloServicios);
-            var productos = JSON.stringify(arregloProductos);
-            
-            var factura = {
-                idPersona: $("#idPersona").val(),
-                servicios: servicios,
-                productos: productos
-            };
-            
-            $.ajax({
+
+                var productos = JSON.stringify(arregloProductos);
+
+                var factura = {
+                    idPersona: $("#idPersona").val(),
+                    productos: productos,
+                    formaPago: $("#formaPago").val(),
+                    idFarmaceutico: $("#idFarmaceutico").val()
+                };
+                
+                $.ajax({
                     type: "POST",
-                    url: "/palace/administrador/guardarFactura",
+                    url: "/administrador/guardarFactura",
                     data: factura
                 })
-                        .done(function(msg) {
+                        .done(function (msg) {
                             var json = eval("(" + msg + ")");
-                            if(json.respuesta == "exito"){
-                                x.html ( "<p>Factura Guardada Correctamente</p>");
-                                window.open("/palace/administrador/generarFactura/"+json.idFactura);
+                            if (json.respuesta == "exito") {
+                                x.html("<p>Factura Guardada Correctamente</p>");
+                                window.open("/administrador/generarFactura/" + json.idFactura);
                                 exito();
                                 ocultar();
-                            }else{
-                                x.html ( "<p>Error al Guardar Factura</p>");
+                                setTimeout(function () {
+                                }, 2000);
+                            } else {
+                                x.html("<p>Error al Guardar Factura</p>");
 
                                 error();
                                 ocultar();
                             }
-                            
-                });
-            
+
+                        });
+
+            }
         }
-        }
 
 
 
-        $('#idPersona').keypress(function(event) {
+        $('#idPersona').keypress(function (event) {
             var keycode = (event.which) ? event.which : event.keyCode;
-            
+
             if (keycode == '13') {
                 $.ajax({
                     type: "POST",
-                    url: "/palace/administrador/consultarNombrePersona",
+                    url: "/administrador/consultarNombrePersona",
                     data: { idPersona: $("#idPersona").val() }
                 })
-                        .done(function(msg) {
+                        .done(function (msg) {
                             var json = eval("(" + msg + ")");
 
                             $("#nombre").html(json);
-                            $("#idPersona").attr("disabled","disabled");
+                            $("#idPersona").attr("disabled", "disabled");
+                            $("#codigo").focus();
                         });
             } else if (keycode == '8' || keycode == '46') {
 
@@ -193,27 +263,69 @@
 
             $.ajax({
                 type: "POST",
-                url: "/palace/administrador/consultarProducto",
+                url: "/administrador/consultarProducto2",
                 data: { idProducto: idProducto }
             })
-                    .done(function(msg) {
+                    .done(function (msg) {
                         var json = eval("(" + msg + ")");
-
-                        $("#precioUnid").val(json.precio);
-                        $("#precioTotal").val(json.precio);
-                        $("#cantidad").val("1");
+                        
+                        $("#presentacion").html(json.tabla);
+                        var presentacion = $("#presentacion  option:selected").html();
+                        var arrayPresentacion = presentacion.split("/");
+                        
+                        var cantidad = parseInt(arrayPresentacion[1]);
+                        
+                        var precio = parseInt(json.precio);
+                        
+                        $("#precioUnid").val(parseInt(precio.toFixed(2)) * cantidad);
+                        var total = precio + (precio.toFixed(2) * (parseFloat(json.iva).toFixed(2) / 100) * cantidad);
+                        $("#precioTotal").val(parseInt(json.unidadPrincipal) * total.toFixed(2));
+                        $("#iva").val(json.iva);
+                        $("#cantidad").val(0);
+                        $("#codigo").val(json.codigoBarras);
+                        $("#pp").val(json.precioFabrica);
+                        $("#unidades").val(json.unidades);
+                        $("#presentacion").focus();
                     });
-
         }
 
-        $("#cantidad").keyup(function() {
+        function codigoBarras() {
 
-            var precio = parseInt($("#precioUnid").val());
+            $("#servicio").attr("disabled", "disabled");
+            $("#servicio").css("background-color", "#B5A6A6");
+            $("#servidor").attr("disabled", "disabled");
+            $("#servidor").css("background-color", "#B5A6A6");
+
+            var codigo = $("#codigo").val();
+
+            $.ajax({
+                type: "POST",
+                url: "/administrador/consultarProductoByCodigo",
+                data: { codigo: codigo }
+            })
+                    .done(function (msg) {
+                        var json = eval("(" + msg + ")");
+
+                        var precio = parseFloat(json.precio) / parseInt(json.unidadesProducto);
+                        $("#precioUnid").val(precio.toFixed(2));
+                        var total = precio + (precio.toFixed(2) * (parseFloat(json.iva).toFixed(2) / 100));
+                        $("#precioTotal").val(parseInt(json.unidadPrincipal) * total.toFixed(2));
+                        $("#iva").val(json.iva);
+                        $("#cantidad").val(json.unidadPrincipal);
+                        $("#producto").val(json.idProducto);
+                        $("#cantidad").focus();
+                    });
+        }
+
+        function calcularTotal() {
+
+            var pp = parseFloat($("#pp").val());
+            var precio = parseFloat($("#precioUnid").val());
             var cantidad = parseInt($("#cantidad").val());
-            
-            $("#precioTotal").val(precio * cantidad);
-
-        });
+            var iva = parseFloat($("#iva").val());
+            var total = precio + (precio * (iva / 100));
+            $("#precioTotal").val(total * cantidad);
+        }
 
         function limpiar() {
             $("#servicio").removeAttr("disabled");
@@ -224,7 +336,7 @@
             $("#producto").css("background-color", "#fffff");
             $("#cantidad").removeAttr("disabled");
             $("#cantidad").css("background-color", "#fffff");
-            
+
             $("#precioTotal").css("background-color", "#fffff");
             $("#modPrecio").css("display", "none");
             $("#servicio").val("");
@@ -233,201 +345,174 @@
             $("#cantidad").val("");
             $("#precioUnid").val("");
             $("#precioTotal").val("");
+            $("#iva").val("");
+            $("#codigo").val("");
+            $("#codigo").focus();
+        }
 
-    }
-    
-    function consultarTotal(){
-        
-            var suma =0;
-            $("#tServicios .rs").each(function(index) {
-                
+        function consultarTotal() {
 
-                $(this).children("td").each(function(index2) {
+            var suma = 0;
+
+            $("#tProductos .rc").each(function (index) {
+
+
+                $(this).children("td").each(function (index2) {
                     switch (index2) {
-                        
-                        case 4:
+
+                        case 5:
                             suma += parseInt($(this).text());
                             break;
-                        
+
                     }
-                    
+
                 });
-                
+
             });
 
-            
-            $("#tProductos .rc").each(function(index) {
-                
-
-                $(this).children("td").each(function(index2) {
-                    switch (index2) {
-                        
-                        case 4:
-                            suma += parseInt($(this).text());
-                            break;
-                        
-                    }
-                    
-                });
-                
-            });
-            
             $("#total").val(suma);
-    }
-
-        function servidores() {
-
-            var servicio = document.getElementById("servicio").value;
-            
-            $("#producto").val("");
-            
-            $.ajax({
-                type: "POST",
-                url: "/palace/administrador/listarServidores/" + servicio,
-                data: {}
-            })
-                    .done(function(msg) {
-                        $("#servidor").html(msg);
-                    });
-            $("#producto").attr("disabled", "disabled");
-            $("#producto").css("background-color", "#B5A6A6");
-            $("#cantidad").attr("disabled", "disabled");
-            $("#cantidad").css("background-color", "#B5A6A6");
-            $("#precioUnid").attr("disabled", "disabled");
-            $("#precioTotal").attr("disabled", "disabled");
-            $("#precioTotal").css("background-color", "#B5A6A6");
-
-            $.ajax({
-                type: "POST",
-                url: "/palace/administrador/consultarServicio",
-                data: {idServicio: servicio}
-            })
-                    .done(function(msg) {
-                        var json = eval("(" + msg + ")");
-
-                        $("#precioUnid").val(json.precio);
-                        $("#modPrecio").css("display", "block");
-                    });
-                    
-}
-        
-
+        }
         function habilitarPrecio() {
             $("#precioUnid").removeAttr("disabled");
         }
+
         function agregarProducto() {
             var producto = $("#producto  option:selected").html();
+            var presentacion = $("#presentacion  option:selected").html();
+            var arrayPresentacion = presentacion.split("/");
+            var idPresentacion = $("#presentacion").val();
+            var nombrePresentacion= arrayPresentacion[0];
+            var cantidad = parseInt(arrayPresentacion[1]);
             var idProducto = $("#producto").val();
-            var idServicio = $("#servicio").val();
-            var servicio = $("#servicio  option:selected").html();
-            var servidor = $("#servidor  option:selected").html();
-            var idServidor = $("#servidor").val();
             var cantidad = $("#cantidad").val();
             var precioU = $("#precioUnid").val();
             var precioT = $("#precioTotal").val();
-            
+            var iva = $("#iva").val();
+            var pp = $("#pp").val();
+            var unidades = $("#unidades").val();
 
-            if ($("#servicio").attr("disabled") == "disabled") {
-                //Agregar Producto
-                var band =0;
-                $("#tProductos .rc").each(function(index) {
-                var x, c, preu;
-                $(this).children("td").each(function(index2) {
-                    
-                    switch (index2) {
-                        case 0:
-                            if( $(this).text()== idProducto){
-                             band=1;
-                             x=prompt("El Producto ya Existe en la factura \nElige una de las Siguientes opciones DIGITANDO SOLO EL NUMERO DE LA OPCIÓN \n \n 1. Reemplazar Cantidad \n 2. Añadir Cantidad","");
-                            }
-                            break;
-                        
-                        case 2:
-                            
-                            if(x == "1"){
-                                
-                                $(this).text(cantidad);
-                                 c= parseInt(cantidad);
-                            }else if(x=="2"){
-                                var cant = $(this).text();
-                                cant = parseInt(cant);
-                                cantidad = parseInt(cantidad);
-                                c=cant + cantidad;
-                                $(this).text(c);
-                            } else{
-                                var cant = $(this).text();
-                                c =parseInt(cant);
-                            }
-                            break;
-                        case 3:
-                            preu = parseInt($(this).text());
-                            
-                            break;
-                        case 4:
-                            $(this).text(preu*c);
-                            break;
-                        
-                    }
-                   
+            if (pp >= precioU) {
+                alert("Error: El precio de Venta es menor o igual que el precio del Proveedor");
+            } else if (unidades == 0) {
+                alert("Error: No hay unidades Disponibles de este producto");
+            } else {
+                var band = 0;
+                $("#tProductos .rc").each(function (index) {
+                    var x, c, preu, iv;
+                    $(this).children("td").each(function (index2) {
+
+                        switch (index2) {
+                            case 0:
+                                if ($(this).text() == idProducto) {
+                                    band = 1;
+                                    x = prompt("El Producto ya Existe en la factura \nElige una de las Siguientes opciones DIGITANDO SOLO EL NUMERO DE LA OPCIÓN \n \n 1. Reemplazar Cantidad \n 2. Añadir Cantidad", "");
+                                }
+                                break;
+
+                            case 2:
+
+                                if (x == "1") {
+
+                                    $(this).text(cantidad);
+                                    c = parseInt(cantidad);
+                                } else if (x == "2") {
+                                    var cant = $(this).text();
+                                    cant = parseInt(cant);
+                                    cantidad = parseInt(cantidad);
+                                    c = cant + cantidad;
+                                    $(this).text(c);
+                                } else {
+                                    var cant = $(this).text();
+                                    c = parseInt(cant);
+                                }
+                                break;
+                            case 3:
+                                preu = parseFloat($(this).text()).toFixed(2);
+
+                                break;
+                            case 4:
+                                iv = parseFloat($(this).text()).toFixed(2);
+                                break;
+                            case 5:
+                                $(this).text(((preu * (iva / 100)) + preu) * c);
+                                break;
+
+
+                        }
+
+                    });
+
                 });
-                
-                });
-                if(band==0){
-                    $("#tProductos").append("<tr class='rc'><td>" + idProducto + "</td><td>" + producto + "</td><td>" + cantidad + "</td><td>" + precioU + "</td><td>" + precioT + "</td><td><button class='button small red' onclick='quitarProducto("+idProducto+")'>x</button></td></tr>");
-                }  
-            } else if ($("#producto").attr("disabled") == "disabled") {
-                //Agregar Servicio
-                $("#tServicios").append("<tr class='rs'><td>" + idServicio + "</td><td>" + servicio + "</td><td>" + servidor + "</td><td hidden>" + idServidor + "</td><td>" + precioU + "</td><td><button class='button small red' onclick='quitarServicio("+idServicio+")'>x</button></td></tr>");
+                if (band == 0) {
+                    $("#tProductos").append("<tr class='rc'><td>" + idProducto + "</td><td>" + producto + "</td>><td>" + nombrePresentacion + "</td><td>" + cantidad + "</td><td>" + precioU + "</td><td>" + iva + "</td><td>" + precioT + "</td><td><button class='button small red' onclick='quitarProducto(" + idProducto + ")'>x</button></td><td hidden>"+idPresentacion+"</td></tr>");
+                }
+
+                limpiar();
+                consultarTotal();
+                //$("#detallesProducto").append("<tr><td>"+producto+"</td><td>"+cantidad+"</td><td></td><td></td></tr>");
             }
 
-            limpiar();
-            consultarTotal();
-            //$("#detallesProducto").append("<tr><td>"+producto+"</td><td>"+cantidad+"</td><td></td><td></td></tr>");
+
 
         }
         function validarNro(e) {
-           var key;
-            if(window.event) // IE
-	         {
-	             key = e.keyCode;
-	         }
-             else if(e.which) // Netscape/Firefox/Opera
-	         {
-	            key = e.which;
-	         }
+            var key;
+            if (window.event) // IE
+            {
+                key = e.keyCode;
+            }
+            else if (e.which) // Netscape/Firefox/Opera
+            {
+                key = e.which;
+            }
 
-                if (key < 48 || key > 57)
+            if (key < 48 || key > 57)
+            {
+                if (key == 46 || key == 8) // Detectar . (punto) y backspace (retroceso)
                 {
-                  if(key == 46 || key == 8) // Detectar . (punto) y backspace (retroceso)
-                { return true; }
-             else 
-               { return false; }
-               }
-              return true;
-             }
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
 
-    function validar_texto(e) {
-           tecla = (document.all) ? e.keyCode : e.which;
+        function validar_texto(e) {
+            tecla = (document.all) ? e.keyCode : e.which;
 
             //Tecla de retroceso para borrar, siempre la permite
-             if (tecla==8) return true; 
+            if (tecla == 8)
+                return true;
 
-             // Patron de entrada, en este caso solo acepta letras
-                 patron =/[A-Za-z\s]/; 
+            // Patron de entrada, en este caso solo acepta letras
+            patron = /[A-Za-z\s]/;
 
-                   tecla_final = String.fromCharCode(tecla);
-                  return patron.test(tecla_final); 
-        } 
+            tecla_final = String.fromCharCode(tecla);
+            return patron.test(tecla_final);
+        }
+
+        function calcularCambio() {
+
+            var dinero = parseInt($("#dinero").val());
+            var total = parseFloat($("#total").val());
+
+            $("#cambio").val(dinero - total);
+
+        }
 
     </script>
 
-<div  id="overlay"></div>
-            <div  id="mensaje">
-              <div style="float:right">
-                  <a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='none';document.getElementById('fade').style.display='none'"><img src="../utiles/image/close.png"/></a>
-             </div>
-                
-            </div>
+    <div  id="overlay"></div>
+    <div  id="mensaje">
+        <div style="float:right">
+            <a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display = 'none';
+                    document.getElementById('fade').style.display = 'none'"><img src="../utiles/image/close.png"/></a>
+        </div>
+
+    </div>
     <div style=" width: 80%; margin-left: 10%; margin-top: 3%;"> 
         <div> <h2> Datos Personales</h2></div> 
         <br><br>
@@ -443,37 +528,41 @@
 
                 </td>
             </tr>
-
+            <tr >
+                <td>Forma de Pago:</td>
+                <td>
+                    <select id="formaPago">
+                        <option value="efectivo">Efectivo</option>
+                        <option value="tarjeta">Tarjeta</option>
+                        <option value="bono">Cupón / Bono</option>
+                    </select>
+                </td>
+            </tr>
+            <tr >
+                <td>Vendedor:</td>
+                <td>
+                    <select id="idFarmaceutico">
+                        <?php foreach($personas as $pro){ ?>
+                        <option value="<?php echo $pro->getIdPersona(); ?>"><?php echo $pro->getNombres()." ".$pro->getPApellido();?></option>
+                        <?php } ?>
+                    </select>
+                </td>
+            </tr>
         </table>
         <br>
         <table id="mitabla" width="100%" >
             <thead>
-
-            <th>Servicio</th>
-            <th>Servidor</th>
+            <th>Cod.Barras</th>
             <th>Producto</th>
+            <th width="10%">Presentacion</th>
             <th width="10%">Cantidad</th>
-            <th width="15%">Precio Unid.</th>
+            <th width="15%">Precio Present.</th>
+            <th width="15%">IVA%</th>
             <th width="15%">Precio total</th>
-            <th width="8%">Agregar</th>
             </thead>
             <tr>
-
-                <td >
-                    <select id="servicio" class="box-text" onchange="servidores()">
-                        <option></option>
-                        <?php foreach($servicios as $ser){ ?>
-                        <option value="<?php echo $ser->getIdServicio(); ?>"><?php echo $ser->getNombre();?></option>
-                        <?php } ?>
-                    </select>
-                </td>
+                <td><input class="box-text" id="codigo" type="text"/></td>
                 <td>
-                    <select class="box-text" id="servidor">
-
-                    </select>  
-                </td>
-                <td >
-
                     <select class="box-text" id="producto" onchange="producto()">
                         <option></option>
                         <?php foreach($productos as $pro){ ?>
@@ -481,54 +570,27 @@
                         <?php } ?>
                     </select>
                 </td>
-                <td><input class="box-text" id="cantidad" type="text" onkeypress="javascript:return validarNro(event)"/></td>
-                <td><input class="box-text" id="precioUnid" type="number" onkeypress="javascript:return validarNro(event)" /></td>
-                <td ><input class="box-text" id="precioTotal" disabled type="number" /></td>
-                <td><button id="agregarProducto" class="button small red" onclick="agregarProducto()">Agregar</button></td>
-            </tr>
-            <tr style="background-color: #ffffff;">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td><button style="display: none" id="modPrecio" class="button small red" onclick="habilitarPrecio()">Modificar</button></td>
-                <td></td>
-                <td></td>
-
+                <td><select id="presentacion" onchange="calcularPresentacion()" class="box-text"></select></td>
+                <td><input class="box-text" onfocus="seleccionar(this)" id="cantidad" type="text" onkeypress="javascript:return validarNro(event)"/></td>
+                <td><input class="box-text" id="precioUnid" type="text" onkeypress="javascript:return validarNro(event)" onfocus="seleccionar(this)"/></td>
+                <td><input class="box-text" id="iva" disabled type="number" /></td>
+                <td><input class="box-text" id="precioTotal" disabled type="number" /><input class="box-text" id="pp" hidden type="number" /><input class="box-text" id="unidades" hidden type="number" /></td>
             </tr>
         </table>
 
-        <div style="float: left;width: 40%;">
-            <div> <h2> Servicios</h2></div> 
-            <table id="mitabla" width="100%" >
-                <thead>
-
-                <th>COD</th>
-                <th>Servicio</th>
-                <th>Servidor</th>
-                <th hidden>ced Servidor</th>
-                <th width="15%">Precio</th>
-                <th>.</th>
-
-                </thead>
-                <tbody id="tServicios">
-
-
-
-                </tbody>
-            </table>
-        </div>
-        <div style="float: right;width: 40%;">
+        <div style="float: right;width: 100%;">
             <div> <h2> Productos</h2></div> 
             <table id="mitabla" width="100%" >
                 <thead>
 
-                <th>COD</th>
+                <th width="10%">COD</th>
                 <th>Producto</th>
-                <th>Cantidad</th> 
-                <th width="15%">Precio Unid.</th>
+                <th width="8%">Presentación</th> 
+                <th width="8%">Cantidad</th> 
+                <th width="15%">Precio Present.</th>
+                <th width="10%">IVA%.</th>
                 <th width="15%">Subtotal</th>
-                <th>.</th>
+                <th width="5%">.</th>
 
                 </thead>
                 <tbody id="tProductos">
@@ -547,15 +609,29 @@
                         <input class="box-text" id="total" type="number" disabled />
                     </td>
                 </tr>
+                <tr>
+                    <td>
+                        Dinero:
+                    </td>
+                    <td>
+                        <input class="box-text" id="dinero" type="number" onkeyup="calcularCambio()" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Cambio:
+                    </td>
+                    <td>
+                        <input class="box-text" id="cambio" type="number" disabled />
+                    </td>
+                </tr>
             </table>
         </div>
         <div style="margin-left: 70%; margin-top: 3%;"> 
             <button type="submit" class="button small red" onclick="guardar()"> Guardar</button>
-            
+
         </div>
         <br>
-
-
 
     </div>
 

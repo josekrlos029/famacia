@@ -32,12 +32,15 @@ function cargadorClases(){
     require_once './config/Db.php';
     require_once './modelo/Modelo.php';
     require_once './modelo/Persona.php';
-    require_once './modelo/DetalleProducto.php';
+    require_once './modelo/DetalleFactura.php';
     require_once './modelo/Factura.php';
     require_once './modelo/Proveedor.php';
     require_once './modelo/IngresoProducto.php';
     require_once './modelo/Producto.php';
     require_once './modelo/Rol.php';
+    require_once './modelo/Laboratorio.php';
+    require_once './modelo/Estante.php';
+    require_once './modelo/Compra.php';
     require_once './modelo/Inicio.php';
     require_once './modelo/Usuario.php';
     require_once './controlador/Controlador.php';
@@ -46,6 +49,7 @@ function cargadorClases(){
     require_once './controlador/MedicoControl.php';
     require_once './vista/Vista.php';
     require_once './utiles/php/fpdf/fpdf.php';
+    require_once './utiles/php/PDF.php';
 }
 
 spl_autoload_register('cargadorClases');

@@ -21,7 +21,7 @@
               
                     $.ajax({
                       type: "POST",
-                      url: "/palace/inicio/autenticar",
+                      url: "/famacia/inicio/autenticar",
                       data: usuario
                   })
                   .done(function(msg) {
@@ -44,7 +44,7 @@
     </head>
     <body>
     <div style="width: 75%; height:100%; float:left;">
-        <div style="margin-left:15%; margin-top:10%;"><img src="utiles/image/logo.jpg" /></div>
+        <div style="margin-left:15%; margin-top:10%; font-size: 50px; text-align: center"><h1>Droguería San Miguel</h1></div>
     </div>
     <div style="width: 24%; height:100%; float:right; border-left:2px solid #3bc3f5;">
         <div style="margin-top: 60%; margin-left: 25%; ">

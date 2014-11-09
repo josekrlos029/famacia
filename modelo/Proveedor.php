@@ -20,10 +20,7 @@ class Proveedor extends Modelo{
     private $idProveedor;
     private $nombre;
     private $descripcion;
-    private $nit;
-    private $direccion;
-    private $telefono;
-            
+    
     public function getIdProveedor() {
         return $this->idProveedor;
     }
@@ -34,18 +31,6 @@ class Proveedor extends Modelo{
 
     public function getDescripcion() {
         return $this->descripcion;
-    }
-
-    public function getNit() {
-        return $this->nit;
-    }
-
-    public function getDireccion() {
-        return $this->direccion;
-    }
-
-    public function getTelefono() {
-        return $this->telefono;
     }
 
     public function setIdProveedor($idProveedor) {
@@ -60,16 +45,60 @@ class Proveedor extends Modelo{
         $this->descripcion = $descripcion;
     }
 
-    public function setNit($nit) {
-        $this->nit = $nit;
+    private function mapearProveedor(Proveedor $proveedor, array $props) {
+        if (array_key_exists('idProveedor', $props)) {
+            $proveedor->setIdProveedor($props['idProveedor']);
+        }
+         if (array_key_exists('nombre', $props)) {
+            $proveedor->setNombre($props['nombre']);
+        }
+         if (array_key_exists('descripcion', $props)) {
+            $proveedor->setDescripcion($props['descripcion']);
+        }
+    }
+      
+    private function getParametros(Proveedor $pro){
+              
+        $parametros = array(
+            ':nombre' => $pro->getNombre(),
+            ':descripcion' => $pro->getDescripcion()
+        );
+        return $parametros;
+    }
+    
+    private function getParametros2(Proveedor $pro){
+              
+        $parametros = array(
+            ':idProveedor' => $pro->getIdProveedor(),
+            ':nombre' => $pro->getNombre(),
+            ':descripcion' => $pro->getDescripcion()
+        );
+        return $parametros;
     }
 
-    public function setDireccion($direccion) {
-        $this->direccion = $direccion;
+    
+    public function leerProveedores() {
+        $sql = "SELECT * FROM proveedor";
+        $this->__setSql($sql);
+        $resultado = $this->consultar($sql);
+        $proveedores = array();
+        foreach ($resultado as $fila) {
+            $proveedor = new Proveedor();
+            $this->mapearProveedor($proveedor, $fila);
+            $proveedores[$proveedor->getIdProveedor()] = $proveedor;
+        }
+        return $proveedores;
     }
-
-    public function setTelefono($telefono) {
-        $this->telefono = $telefono;
+        
+    public function crearProveedor(Proveedor $proveedor) {
+        $sql = "INSERT INTO proveedor (nombre, descripcion) VALUES (:nombre, :descripcion)";
+        $this->__setSql($sql);
+        $this->ejecutar($this->getParametros($proveedor));
     }
-
+    public function actualizarProveedor(Proveedor $proveedor) {
+           $sql = "UPDATE proveedor SET nombre=:nombre, descripcion=:descripcion WHERE idProveedor=:idProveedor";
+        $this->__setSql($sql);
+        $this->ejecutar($this->getParametros2($proveedor));   
+    }
+    
 }
