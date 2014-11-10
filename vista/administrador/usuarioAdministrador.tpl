@@ -52,7 +52,7 @@
 
             function cargarFactura() {
                 $("#contenido").load("/famacia/administrador/factura");
-                $("#titulo").html("<h1>Facturar Servicio</h1>");
+                $("#titulo").html("<h1>Facturar</h1>");
             }
             
             function cargarConsultas() {
@@ -74,7 +74,12 @@
             
             }
 
-
+            function cargarCompra(){
+                
+                $("#contenido").load("/famacia/administrador/compra");
+                $("#titulo").html("<h1>Gestion de Compras</h1>");
+            
+            }
         </script>
 
     </head> 
@@ -93,10 +98,11 @@
             <div style="margin-top:20px;"> 
                 <ul class="accordion">
                     <?php if($_SESSION['idUsuario']==1){ ?>
-                    <li id="six" class="factura"><a onclick="cargarFactura()" href="#">Facturar</a></li>
+                    <li id="six" class="factura"><a onclick="cargarFactura()" href="#">Facturar</a> </li>
+                    <li id="six" class="factura"><a onclick="cargarCompra()" href="#">Compras</a></li>
+                    
                     <li id="one" class="clientes"><a onclick="cargarRegistroPersona()" href="#">Clientes<span><?php echo count($personas); ?></span></a></li>
                     <li id="two" class="productos"><a onclick="cargarRegistroProducto()" href="#">Inventario de Productos<span><?php echo count($productos); ?></span></a></li>
-                    <li id="six" class="factura"><a onclick="cargarCompra()" href="#">Compras</a></li>
                     <li id="six" class="empleados"><a onclick="cargarLaboratorios()" href="#">Laboratorios<span><?php echo count($laboratorios); ?></span></a></li>
                     <li id="six" class="empleados"><a onclick="cargarProveedores()" href="#">Proveedores<span><?php echo count($proveedores); ?></span></a></li>
                     <li id="six" class="empleados"><a onclick="cargarGestionEmpleado()" href="#">Farmaceuticos<span><?php echo count($empleados); ?></span></a></li>

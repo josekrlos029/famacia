@@ -93,7 +93,7 @@ root {
 
 .sub-menu li a {
    color: #00a8c5;
-   background: #d7dbde;
+  
 }
  
 .sub-menu li:last-child a { border: none; }

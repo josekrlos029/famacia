@@ -37,7 +37,7 @@
         }).done(function(msg) {
 
             var json = eval("(" + msg + ")");
-            $("#idProveedor").val(json.id);
+            $("#idProveedor").val(json.idProveedor);
             $("#nombreP").val(json.nombre);
             $("#descripcionP").val(json.descripcion);
             ocultar();

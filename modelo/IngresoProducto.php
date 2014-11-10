@@ -22,6 +22,7 @@ Class IngresoProducto extends Modelo{
     private $cantidad;
     private $fechaVencimiento;
     private $precio;
+    private $ventas;
     
     public function getIdIngreso() {
         return $this->idIngreso;
@@ -70,8 +71,16 @@ Class IngresoProducto extends Modelo{
     function setIdCompra($idCompra) {
         $this->idCompra = $idCompra;
     }
+    
+    function getVentas() {
+        return $this->ventas;
+    }
 
-        
+    function setVentas($ventas) {
+        $this->ventas = $ventas;
+    }
+
+            
     private function mapearIngreso(IngresoProducto $producto, array $props) {
         if (array_key_exists('idIngreso', $props)) {
             $producto->setIdIngreso($props['idIngreso']);
@@ -91,6 +100,10 @@ Class IngresoProducto extends Modelo{
         if (array_key_exists('precio', $props)) {
             $producto->setPrecio($props['precio']);
         }
+        if (array_key_exists('ventas', $props)) {
+            $producto->setVentas($props['ventas']);
+        }
+ 
  
     }
       

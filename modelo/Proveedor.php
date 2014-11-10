@@ -89,6 +89,19 @@ class Proveedor extends Modelo{
         }
         return $proveedores;
     }
+    
+    public function leerProveedorPorId($idProveedor) {
+        $sql = "SELECT * FROM proveedor WHERE idProveedor=".$idProveedor;
+        $this->__setSql($sql);
+        $resultado = $this->consultar($sql);
+        $proveedor = NULL;
+        foreach ($resultado as $fila) {
+            $proveedor = new Proveedor();
+            $this->mapearProveedor($proveedor, $fila);
+            
+        }
+        return $proveedor;
+    }
         
     public function crearProveedor(Proveedor $proveedor) {
         $sql = "INSERT INTO proveedor (nombre, descripcion) VALUES (:nombre, :descripcion)";

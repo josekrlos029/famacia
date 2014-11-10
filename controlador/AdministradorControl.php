@@ -428,6 +428,32 @@ class AdministradorControl extends Controlador {
             echo 'Error de aplicacion: ' . $exc->getMessage();
         }
     }
+    
+    public function compra() {
+        try {
+
+            $this->vista->set('titulo', 'Compras');
+
+            $producto = new Producto();
+            $productos = $producto->leerProductos();
+
+            $this->vista->set('productos', $productos);
+            
+            $proveedor = new Proveedor();
+            $proveedores  = $proveedor->leerProveedores();
+            $this->vista->set('proveedores', $proveedores);
+            
+            $persona = new Persona();
+            $rol = new Rol();
+
+            $personas = $persona->leerPersonasPorRol($rol->getFarmaceutico());
+
+            $this->vista->set('personas', $personas);
+            return $this->vista->imprimir();
+        } catch (Exception $exc) {
+            echo 'Error de aplicacion: ' . $exc->getMessage();
+        }
+    }
 
     public function gestionCita() {
         try {
@@ -566,6 +592,18 @@ class AdministradorControl extends Controlador {
             echo $exc->getTraceAsString();
         }
     }
+    
+    public function consultarProveedor() {
+        try {
+            $idProveedor = isset($_POST['idProveedor']) ? $_POST['idProveedor'] : NULL;
+            $proveedor = new Proveedor();
+            $p = $proveedor->leerProveedorPorId($idProveedor);
+            
+            echo json_encode(array("idProveedor" => $p->getIdProveedor(), "nombre" => $p->getNombre(),"descripcion" => $p->getDescripcion()));
+        } catch (Exception $exc) {
+            echo $exc->getTraceAsString();
+        }
+    }
 
     public function consultarPersona() {
         try {
@@ -676,6 +714,26 @@ class AdministradorControl extends Controlador {
             echo json_encode($exc->getCode());
         }
     }
+    
+    public function modificarProveedor() {
+        try {
+            $idProveedor = isset($_POST['idProveedor']) ? $_POST['idProveedor'] : NULL;
+            $nombre = isset($_POST['nombre']) ? $_POST['nombre'] : NULL;
+            $descripcion = isset($_POST['descripcion']) ? $_POST['descripcion'] : NULL;
+            
+            $proveedor = new Proveedor();
+
+            $proveedor->setIdProveedor($idProveedor);
+            $proveedor->setNombre($nombre);
+            $proveedor->setDescripcion($descripcion);
+            
+            $proveedor->actualizarProveedor($proveedor);
+
+            echo json_encode("exito");
+        } catch (Exception $exc) {
+            echo json_encode($exc->getCode());
+        }
+    }
 
     public function modificarServicio() {
         try {
@@ -699,7 +757,7 @@ class AdministradorControl extends Controlador {
             echo json_encode($exc->getCode());
         }
     }
-
+    
     public function guardarFactura() {
         try {
 
@@ -740,6 +798,45 @@ class AdministradorControl extends Controlador {
             }
 
             echo json_encode(array("respuesta" => "exito", "idFactura" => $idFactura));
+        } catch (Exception $exc) {
+            echo json_encode($exc->getTraceAsString());
+        }
+    }
+    
+    public function guardarCompra() {
+        try {
+
+            $productos = isset($_POST['productos']) ? $_POST['productos'] : NULL;
+            $productos = json_decode($productos);
+            $idProveedor = isset($_POST['idProveedor']) ? $_POST['idProveedor'] : NULL;
+            $formaPago = isset($_POST['formaPago']) ? $_POST['formaPago'] : NULL;
+            $fecha = getdate();
+            $fecha = $fecha["year"] . "-" . $fecha["mon"] . "-" . $fecha["mday"];
+            $hora = date("H:i:s");
+
+            $compra = new Compra();
+            $compra->setFecha($fecha);
+            $compra->setIdProveedor($idProveedor);
+            $idCompra = $compra->crearCompra($compra);
+
+            foreach ($productos as $p) {
+               
+                $df = new IngresoProducto();
+                $df->setIdCompra($idCompra);
+                $df->setIdProducto($p[0]);
+                $df->setCantidad($p[1]);
+                $df->setPrecio($p[2]);
+                $df->setFechaVencimiento($p[4]);
+                
+                $df->crearProducto($df);
+
+                $producto = new Producto();
+                $presentacion = $producto->leerPresentacionPorId($p[3]);
+                $pro = $producto->leerProductoPorId($p[0]);
+                $producto->actualizarUnidades($pro->getIdProducto(), $pro->getUnidades() + ($p[1]*$presentacion[0]["cantidad"]));
+            }
+
+            echo json_encode(array("respuesta" => "exito", "idCompra" => $idCompra));
         } catch (Exception $exc) {
             echo json_encode($exc->getTraceAsString());
         }
