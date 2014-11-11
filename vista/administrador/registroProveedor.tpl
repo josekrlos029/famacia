@@ -237,7 +237,7 @@ function modificarPersona(){
              </div>
                 
        <div style=" margin-top: 5%;margin-left: 5%; float:left; width:45%;">
-        <h2>Datos del Empleado</h2>
+        <h2>Datos del Proveedor</h2>
         </br>
         <table width="100%">
             <tr>

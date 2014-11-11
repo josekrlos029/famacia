@@ -360,7 +360,7 @@
                 $(this).children("td").each(function (index2) {
                     switch (index2) {
 
-                        case 5:
+                        case 6:
                             suma += parseInt($(this).text());
                             break;
 

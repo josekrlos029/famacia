@@ -13,6 +13,11 @@
                 $("#cont-consulta").load("/famacia/administrador/ingresoProducto");
                 $("#titulo").html("<h1>Consultas</h1>");
             }
+            
+            function cargarCompras() {
+                $("#cont-consulta").load("/famacia/administrador/consultaCompras");
+                $("#titulo").html("<h1>Consultas</h1>");
+            }
 </script>
 
 <div  id="overlay"></div>
@@ -31,6 +36,7 @@
                      <tr><td style="text-align: left;"><a onclick="cargarIngresoTotal()" href="#">Ingresos totales</a></td></tr> 
                      <tr><td style="text-align: left;"><a onclick="cargarIngresoEmpleado()" href="#">Ingresos por empleado</a></td>      
                      <tr><td style="text-align: left;"><a onclick="cargarIngresoProducto()" href="#">Ingresos por producto</a></td></tr>
+                     <tr><td style="text-align: left;"><a onclick="cargarCompras()" href="#">Compras Totales</a></td></tr>
                      
                      
                     

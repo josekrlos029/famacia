@@ -90,6 +90,18 @@ class Laboratorio extends Modelo{
         return $laboratorioes;
     }
         
+    public function leerLaboratorioPorId($idLaboratorio) {
+        $sql = "SELECT * FROM laboratorio WHERE idLaboratorio=".$idLaboratorio;
+        $this->__setSql($sql);
+        $resultado = $this->consultar($sql);
+        $laboratorio = NULL;
+        foreach ($resultado as $fila) {
+            $laboratorio = new Laboratorio();
+            $this->mapearLaboratorio($laboratorio, $fila);
+            
+        }
+        return $laboratorio;
+    }
     public function crearLaboratorio(Laboratorio $laboratorio) {
         $sql = "INSERT INTO laboratorio (nombre, descripcion) VALUES (:nombre, :descripcion)";
         $this->__setSql($sql);

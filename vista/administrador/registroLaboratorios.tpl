@@ -37,7 +37,7 @@
         }).done(function(msg) {
 
             var json = eval("(" + msg + ")");
-            $("#idLaboratorio").val(json.id);
+            $("#idLaboratorio").val(json.idLaboratorio);
             $("#nombreP").val(json.nombre);
             $("#descripcionP").val(json.descripcion);
             ocultar();
@@ -237,7 +237,7 @@ function modificarPersona(){
              </div>
                 
        <div style=" margin-top: 5%;margin-left: 5%; float:left; width:45%;">
-        <h2>Datos del Empleado</h2>
+        <h2>Datos del Laboratorio</h2>
         </br>
         <table width="100%">
             <tr>

@@ -174,11 +174,18 @@ class AdministradorControl extends Controlador {
             $FechaTxt = $fecha["year"] . "-" . $fecha["mon"] . "-" . $fecha["mday"];
             $detalles = $factura->leerFacturaPorRangoFecha($FechaTxt, $FechaTxt);
             $this->vista->set('detalles', $detalles);
-            $ingreso = new IngresoProducto();
-            $detalles2 = $ingreso->leerIngresoPorRangoFecha($FechaTxt, $FechaTxt);
-            $this->vista->set('detalles2', $detalles2);
             
             $this->vista->set('titulo', 'Ingresos Totales');
+            return $this->vista->imprimir();
+        } catch (Exception $exc) {
+            echo 'Error de aplicacion: ' . $exc->getMessage();
+        }
+    }
+    
+    public function consultaCompras() {
+        try {
+            
+            $this->vista->set('titulo', 'Compras');
             return $this->vista->imprimir();
         } catch (Exception $exc) {
             echo 'Error de aplicacion: ' . $exc->getMessage();
@@ -347,6 +354,25 @@ class AdministradorControl extends Controlador {
             $proveedor->setDescripcion($descripcion);
             
             $proveedor->crearProveedor($proveedor);
+            echo json_encode("exito");
+        } catch (Exception $exc) {
+            echo json_encode($exc->getCode());
+        }
+    }
+    
+    public function registrarLaboratorio() {
+
+        try {
+            
+            $nombre = isset($_POST['nombre']) ? $_POST['nombre'] : NULL;
+            $descripcion = isset($_POST['descripcion']) ? $_POST['descripcion'] : NULL;
+            
+            $laboratorio = new Laboratorio();
+
+            $laboratorio->setNombre($nombre);
+            $laboratorio->setDescripcion($descripcion);
+            
+            $laboratorio->crearLaboratorio($laboratorio);
             echo json_encode("exito");
         } catch (Exception $exc) {
             echo json_encode($exc->getCode());
@@ -604,6 +630,18 @@ class AdministradorControl extends Controlador {
             echo $exc->getTraceAsString();
         }
     }
+    
+    public function consultarLaboratorio() {
+        try {
+            $idLaboratorio = isset($_POST['idLaboratorio']) ? $_POST['idLaboratorio'] : NULL;
+            $laboratorio = new Laboratorio();
+            $p = $laboratorio->leerLaboratorioPorId($idLaboratorio);
+            
+            echo json_encode(array("idLaboratorio" => $p->getIdLaboratorio(), "nombre" => $p->getNombre(),"descripcion" => $p->getDescripcion()));
+        } catch (Exception $exc) {
+            echo $exc->getTraceAsString();
+        }
+    }
 
     public function consultarPersona() {
         try {
@@ -728,6 +766,26 @@ class AdministradorControl extends Controlador {
             $proveedor->setDescripcion($descripcion);
             
             $proveedor->actualizarProveedor($proveedor);
+
+            echo json_encode("exito");
+        } catch (Exception $exc) {
+            echo json_encode($exc->getCode());
+        }
+    }
+    
+    public function modificarLaboratorio() {
+        try {
+            $idLaboratorio = isset($_POST['idLaboratorio']) ? $_POST['idLaboratorio'] : NULL;
+            $nombre = isset($_POST['nombre']) ? $_POST['nombre'] : NULL;
+            $descripcion = isset($_POST['descripcion']) ? $_POST['descripcion'] : NULL;
+            
+            $laboratorio = new Laboratorio();
+
+            $laboratorio->setIdLaboratorio($idLaboratorio);
+            $laboratorio->setNombre($nombre);
+            $laboratorio->setDescripcion($descripcion);
+            
+            $laboratorio->actualizarLaboratorio($laboratorio);
 
             echo json_encode("exito");
         } catch (Exception $exc) {
@@ -891,9 +949,25 @@ class AdministradorControl extends Controlador {
         $factura = new Factura();
         $detalles = $factura->leerFacturaPorRangoFecha($inicio, $fin);
         $this->vista->set('detalles', $detalles);
+        /*
         $ingreso = new IngresoProducto();
         $detalles2 = $ingreso->leerIngresoPorRangoFecha($inicio, $fin);
-        $this->vista->set('detalles2', $detalles2);
+        $this->vista->set('detalles2', $detalles2);*/
+        return $this->vista->imprimir();
+    }
+    
+    public function tablaConsultaCompras() {
+
+        $inicio = isset($_POST['inicio']) ? $_POST['inicio'] : NULL;
+        $fin = isset($_POST['fin']) ? $_POST['fin'] : NULL;
+
+        $compra = new Compra();
+        $detalles = $compra->leerCompraPorRangoFecha($inicio, $fin);
+        $this->vista->set('detalles', $detalles);
+        /*
+        $ingreso = new IngresoProducto();
+        $detalles2 = $ingreso->leerIngresoPorRangoFecha($inicio, $fin);
+        $this->vista->set('detalles2', $detalles2);*/
         return $this->vista->imprimir();
     }
 
