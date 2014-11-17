@@ -560,7 +560,7 @@ function agregar() {
                 <th >Unid. Ppal.</th>
                 <th >Unds.</th>
                 <th >Cod. Barras</th>
-                <th  width="5%">pedidos</th>
+                <th  width="5%">Modificar</th>
             </thead>
             <tbody id="table">
                 <?php $prod = new Producto(); 

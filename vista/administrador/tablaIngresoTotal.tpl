@@ -9,7 +9,7 @@
                 <th width="40%">Valor</th>
                 <th width="40%">Pagó</th>
                 <th width="">Ver+</th>
-
+                <th width="">Eliminar</th>
                 </thead>
                 <tbody>
                     <?php 
@@ -27,6 +27,7 @@
                         <td><?php echo round($d["sumaProductos"], 2); ?></td>
                         <td><?php echo $d["formaPago"]; ?></td>
                         <td width="5%" style="text-align:right;"><buttom type="submit" class="button small red"  onclick="consultaFactura('<?php echo $idFactura; ?>');">...</buttom></td> 
+                        <td width="5%" style="text-align:right;"><buttom type="submit" class="button small red"  onclick="eliminarFactura('<?php echo $idFactura; ?>');">...</buttom></td> 
 
                 </tr>
                 <?php $sum += $d["sumaProductos"]; } 

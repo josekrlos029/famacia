@@ -17,8 +17,7 @@
                     $sumaP= 0;
                     foreach($dp as $d){
                     $cont++;
-                    $idFactura = $d["idFactura"];
-                    $idProducto = $d["idProducto"];
+                    $idIngreso = $d["idIngreso"];
                 ?>
                 <tr>
                     <td><?php echo $cont; ?></td>
@@ -27,7 +26,7 @@
                     <td><?php echo $d["cantidad"]; ?></td>
                     <td><?php echo $d["precioVenta"];?></td>
                     <td><?php echo $d["cantidad"]*($d["precioVenta"]+($d["precioVenta"]*($d["iva"]/100)));?></td>
-                    <td width="5%" style="text-align:right;"><buttom type="submit" class="button small red"  onclick="eliminarProductoP('<?php echo $idFactura; ?>','<?php echo $idProducto; ?>');">...</buttom></td> 
+                    <td width="5%" style="text-align:right;"><buttom type="submit" class="button small red"  onclick="eliminarProductoP('<?php echo $idIngreso; ?>');">X</buttom></td> 
                 </tr>
                 <?php $sumaP += $d["cantidad"]*($d["precioVenta"]+($d["precioVenta"]*($d["iva"]/100))); } ?>
 

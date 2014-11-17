@@ -103,11 +103,31 @@ private function mapearDetalleProducto(DetalleFactura $factura, array $props) {
         return $this->consultar($sql);
         
         }
+        
+        public function leerDetalle($idFactura, $idProducto){
+            $sql = "SELECT * FROM detallefactura WHERE idFactura=".$idFactura." AND idProducto=".$idProducto;
+            $this->__setSql($sql);
+            $resultado = $this->consultar($sql);
+            $detalle = NULL;
+            foreach ($resultado as $fila) {
+                $detalle = new DetalleFactura();
+                $this->mapearDetalleProducto($detalle, $fila);
+               
+            }
+            return $detalle;
+        }
+                
     
         public function crearDetalleProducto(DetalleFactura $factura) {
         $sql = "INSERT INTO detallefactura (idFactura, idProducto, cantidad, precioVenta, iva) VALUES ( :idFactura, :idProducto, :cantidad, :precioVenta,:iva)";
         $this->__setSql($sql);
         return $this->ejecutar2($this->getParametros($factura));
+        }
+        
+        public function eliminarDetalleFactura($idFactura, $idProducto) {
+        $sql = "DELETE FROM detallefactura WHERE idFactura=:idFactura AND idProducto=:idProducto ";
+        $this->__setSql($sql);
+        return $this->ejecutar(array(":idFactura"=>$idFactura,":idProducto"=>$idProducto));
         }
         
         public function leerPagosPorIdProductoyRangoFecha($idProducto,$inicio,$fin){

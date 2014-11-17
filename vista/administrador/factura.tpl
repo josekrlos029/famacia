@@ -215,6 +215,7 @@
                                 exito();
                                 ocultar();
                                 setTimeout(function () {
+                                    location.href= "/famacia/administrador/factura";
                                 }, 2000);
                             } else {
                                 x.html("<p>Error al Guardar Factura</p>");
@@ -405,38 +406,9 @@
                             case 0:
                                 if ($(this).text() == idProducto) {
                                     band = 1;
-                                    x = prompt("El Producto ya Existe en la factura \nElige una de las Siguientes opciones DIGITANDO SOLO EL NUMERO DE LA OPCIÓN \n \n 1. Reemplazar Cantidad \n 2. Añadir Cantidad", "");
+                                    alert("El Producto ya existe en la factura, debe eliminarlo para agregarlo nuevamente");
                                 }
                                 break;
-
-                            case 2:
-
-                                if (x == "1") {
-
-                                    $(this).text(cantidad);
-                                    c = parseInt(cantidad);
-                                } else if (x == "2") {
-                                    var cant = $(this).text();
-                                    cant = parseInt(cant);
-                                    cantidad = parseInt(cantidad);
-                                    c = cant + cantidad;
-                                    $(this).text(c);
-                                } else {
-                                    var cant = $(this).text();
-                                    c = parseInt(cant);
-                                }
-                                break;
-                            case 3:
-                                preu = parseFloat($(this).text()).toFixed(2);
-
-                                break;
-                            case 4:
-                                iv = parseFloat($(this).text()).toFixed(2);
-                                break;
-                            case 5:
-                                $(this).text(((preu * (iva / 100)) + preu) * c);
-                                break;
-
 
                         }
 

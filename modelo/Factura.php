@@ -112,6 +112,12 @@ Class Factura extends Modelo{
         return $this->ejecutar2($this->getParametros($factura));
     }
     
+       public function eliminarFactura($idFactura) {
+        $sql = "DELETE FROM factura WHERE idFactura=:idFactura";
+        $this->__setSql($sql);
+        return $this->ejecutar2(array(":idFactura"=>$idFactura));
+    }
+    
     public function leerFacturaPorRangoFecha($inicio,$fin){
         $sql = "SELECT p.nombres, p.pApellido, p.sApellido, f.idFactura, f.formaPago, f.hora, f.fecha, (SELECT sum(( dp.precioVenta + (dp.precioVenta * (dp.iva/100)) )*dp.cantidad) FROM detallefactura dp WHERE dp.idFactura=f.idFactura) as sumaProductos FROM factura f, persona p WHERE p.idPersona = f.idFarmaceutico AND f.fecha BETWEEN '".$inicio."' AND '".$fin."' GROUP BY f.idFactura ORDER BY f.fecha DESC ";
         $this->__setSql($sql);

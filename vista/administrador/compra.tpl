@@ -1,5 +1,4 @@
 <html>
-
     <script>
         
         function calcularPresentacion(){
@@ -104,8 +103,6 @@
                 agregarProducto();
                 
             } else {
-               
-                calcularTotal();
                
             }
         });
@@ -308,8 +305,8 @@
             var pp = parseFloat($("#pp").val());
             var precio = parseFloat($("#precioUnid").val());
             var cantidad = parseInt($("#cantidad").val());
-            var total = precio + (precio);
-            $("#precioTotal").val(total * cantidad);
+            $("#precioTotal").val(precio * cantidad);
+            
         }
 
         function limpiar() {

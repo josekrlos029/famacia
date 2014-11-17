@@ -841,16 +841,18 @@ class AdministradorControl extends Controlador {
 
             foreach ($productos as $p) {
                
+                $producto = new Producto();
+                $presentacion = $producto->leerPresentacionPorId($p[4]);
+                
                 $df = new DetalleFactura();
                 $df->setIdFactura($idFactura);
                 $df->setIdProducto($p[0]);
-                $df->setCantidad($p[1]);
+                $df->setCantidad($p[1]*$presentacion[0]["cantidad"]);
                 $df->setIva($p[2]);
                 $df->setPrecioVenta($p[3]);
                 $df->crearDetalleProducto($df);
 
-                $producto = new Producto();
-                $presentacion = $producto->leerPresentacionPorId($p[4]);
+                
                 $pro = $producto->leerProductoPorId($p[0]);
                 $producto->actualizarUnidades($pro->getIdProducto(), $pro->getUnidades() - ($p[1]*$presentacion[0]["cantidad"]));
             }
@@ -878,18 +880,19 @@ class AdministradorControl extends Controlador {
             $idCompra = $compra->crearCompra($compra);
 
             foreach ($productos as $p) {
-               
+
+                $producto = new Producto();
+                $presentacion = $producto->leerPresentacionPorId($p[3]);
+                
                 $df = new IngresoProducto();
                 $df->setIdCompra($idCompra);
                 $df->setIdProducto($p[0]);
-                $df->setCantidad($p[1]);
+                $df->setCantidad($p[1]*$presentacion[0]["cantidad"]);
                 $df->setPrecio($p[2]);
                 $df->setFechaVencimiento($p[4]);
                 
                 $df->crearProducto($df);
 
-                $producto = new Producto();
-                $presentacion = $producto->leerPresentacionPorId($p[3]);
                 $pro = $producto->leerProductoPorId($p[0]);
                 $producto->actualizarUnidades($pro->getIdProducto(), $pro->getUnidades() + ($p[1]*$presentacion[0]["cantidad"]));
             }
@@ -1045,15 +1048,80 @@ class AdministradorControl extends Controlador {
         }
     }
 
-    public function eliminarServiciosEmpleado() {
+    public function eliminarDetalleProducto() {
         try {
-            $idPersona = isset($_POST['idPersona']) ? $_POST['idPersona'] : NULL;
-            $idServicio = isset($_POST['idServicio']) ? $_POST['idServicio'] : NULL;
+            $idFactura = isset($_POST['idFactura']) ? $_POST['idFactura'] : NULL;
+            $idProducto = isset($_POST['idProducto']) ? $_POST['idProducto'] : NULL;
 
-            $servicio = new Servicio();
-            $servicio->eliminarServicioPersona($idPersona, $idServicio);
+            $detalle = new DetalleFactura();
+            $producto = new Producto();
+            $p = $producto->leerProductoPorId($idProducto);
+            $d = $detalle->leerDetalle($idFactura, $idProducto);
+                    
+            $detalle->eliminarDetalleFactura($idFactura, $idProducto);
+            $producto->actualizarUnidades($idProducto, $p->getUnidades() + $d->getCantidad());
+            echo json_encode(array("msj"=>"exito"));
+            
+        } catch (Exception $exc) {
+            echo json_encode($exc->getCode());
+        }
+    }
+    
+    public function eliminarDetalleCompra() {
+        try {
+            $idIngreso = isset($_POST['idIngreso']) ? $_POST['idIngreso'] : NULL;
+            
+            $detalle = new IngresoProducto();
+            $producto = new Producto();
+            $d = $detalle->leerIngresoPorId($idIngreso);
+            $p = $producto->leerProductoPorId($d[0]["idProducto"]);
+            
+            $detalle->eliminarProducto($idIngreso);
+            $producto->actualizarUnidades($p->getIdProducto(), $p->getUnidades() - $d[0]["cantidad"]);
+            
+            echo json_encode(array("msj"=>"exito"));
+        } catch (Exception $exc) {
+            echo json_encode($exc->getCode());
+        }
+    }
+    
+    public function eliminarCompra() {
+        try {
+            $idCompra = isset($_POST['idCompra']) ? $_POST['idCompra'] : NULL;
+            
+            $detalleCompra = new IngresoProducto();
+            $compras = $detalleCompra->leerProductosCompra($idCompra);
+            foreach ($compras as $c) {
+                $producto = new Producto();
+                $detalleCompra->eliminarProducto($c["idIngreso"]);
+                $producto->actualizarUnidades($c["idProducto"], $c["unidades"] - $c["cantidad"]);
+            }
+            
+            $compra = new Compra();
+            $compra->eliminarCompra($idCompra);
 
-            echo json_encode("exito");
+            echo json_encode(array("msj"=>"exito"));
+        } catch (Exception $exc) {
+            echo json_encode($exc->getCode());
+        }
+    }
+    
+    public function eliminarFactura() {
+        try {
+            $idfactura = isset($_POST['idFactura']) ? $_POST['idFactura'] : NULL;
+            
+            $detalleFactura = new DetalleFactura();
+            $detalles= $detalleFactura->leerProductosPorIdFactura($idfactura);
+            foreach ($detalles as $d) {
+                $producto = new Producto();
+                $detalleFactura->eliminarDetalleFactura($d["idFactura"], $d["idProducto"]);
+                $producto->actualizarUnidades($d["idProducto"], $d["unidades"] + $d["cantidad"]);
+            }
+            
+            $detalle = new Factura();
+            $detalle->eliminarFactura($idfactura);
+
+            echo json_encode(array("msj"=>"exito"));
         } catch (Exception $exc) {
             echo json_encode($exc->getCode());
         }
@@ -1066,6 +1134,18 @@ class AdministradorControl extends Controlador {
         $dp = new DetalleFactura();
 
         $dProductos = $dp->leerProductosPorIdFactura($idFactura);
+
+        $this->vista->set('dp', $dProductos);
+        return $this->vista->imprimir();
+    }
+    
+    public function detallesCompra() {
+        $idCompra = isset($_POST['idCompra']) ? $_POST['idCompra'] : NULL;
+
+
+        $dp = new IngresoProducto();
+
+        $dProductos = $dp->leerProductosCompra($idCompra);
 
         $this->vista->set('dp', $dProductos);
         return $this->vista->imprimir();

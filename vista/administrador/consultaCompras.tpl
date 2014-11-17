@@ -36,14 +36,14 @@
         window.open("/famacia/administrador/imprimirContenido/"+c);
     }
     
-    function consultaFactura(idFactura) {
+    function consultaCompra(idCompra) {
         var x = $("#mensaje");
         cargando();
         x.html("<p>Cargando...</p>");
         x.show("speed");
 
 
-        var data = { idFactura: idFactura };
+        var data = { idCompra: idCompra };
 
         $.ajax({
             type: "POST",
@@ -56,6 +56,66 @@
             document.getElementById('light').style.display = 'block';
             document.getElementById('fade').style.display = 'block';
 
+        });
+
+    }
+    
+    function eliminarCompra(idCompra) {
+        var x = $("#mensaje");
+        cargando();
+        x.html("<p>Cargando...</p>");
+        x.show("speed");
+
+
+        var data = { idCompra: idCompra };
+
+        $.ajax({
+            type: "POST",
+            url: "/famacia/administrador/eliminarCompra",
+            data: data
+        }).done(function (msg) {
+            var json = eval("(" + msg + ")");
+            if(json.msj=="exito"){
+                x.html("<p>Compra eliminada Correctamente</p>");
+                exito();
+                ocultar();
+                cargarTabla();
+            }else{
+                x.html("<p>Error al Eliminar Compra</p>");
+                error();
+            }
+         
+        });
+
+    }
+    
+    function eliminarProductoP(idDetalle) {
+        var x = $("#mensaje");
+        cargando();
+        x.html("<p>Cargando...</p>");
+        x.show("speed");
+        document.getElementById('light').style.display = 'none';
+        document.getElementById('fade').style.display = 'none';
+
+        var data = { idIngreso: idDetalle };
+
+        $.ajax({
+            type: "POST",
+            url: "/famacia/administrador/eliminarDetalleCompra",
+            data: data
+        }).done(function (msg) {
+            var json = eval("(" + msg + ")");
+            if(json.msj=="exito"){
+                
+                exito();
+                x.html("<p>Producto Devuelto Correctamente</p>");
+                ocultar();
+                cargarTabla();
+            }else{
+                x.html("<p>Error al Devolver Producto</p>");
+                error();
+            }
+                
         });
 
 

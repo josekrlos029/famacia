@@ -73,6 +73,12 @@ class Compra extends Modelo{
         return $this->ejecutar2($this->getParametros($compra));
     }
     
+    public function eliminarCompra($idCompra) {
+        $sql = "DELETE FROM compra WHERE idCompra=:idCompra";
+        $this->__setSql($sql);
+        return $this->ejecutar2(array("idCompra"=>$idCompra));
+    }
+    
     public function leerCompraPorRangoFecha($inicio,$fin){
         $sql = "SELECT p.nombre, f.idCompra, f.fecha, (SELECT sum( (dp.precio )*dp.cantidad) FROM ingresoproducto dp WHERE dp.idCompra=f.idCompra) as sumaProductos FROM compra f, proveedor p WHERE p.idProveedor = f.idProveedor AND f.fecha BETWEEN '".$inicio."' AND '".$fin."' GROUP BY f.idCompra ORDER BY f.fecha DESC ";
         $this->__setSql($sql);

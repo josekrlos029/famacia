@@ -119,8 +119,7 @@ Class IngresoProducto extends Modelo{
         return $parametros;
     }
 
-    
-    
+     
     public function crearProducto(IngresoProducto $producto) {
         $sql = "INSERT INTO ingresoproducto (idCompra, idProducto, cantidad, fechaVencimiento, precio) VALUES (:idCompra, :idProducto, :cantidad, :fechaVencimiento, :precio)";
         $this->__setSql($sql);
@@ -134,11 +133,18 @@ Class IngresoProducto extends Modelo{
     }
 
     public function leerIngresoPorId($idIngreso){
-        $sql = "SELECT ip.* FROM ingresoproducto ip, producto p WHERE ip.idProducto=p.idProducto AND ip.idIngreso=".$idIngreso;
+        $sql = "SELECT * FROM ingresoproducto ip, producto p WHERE ip.idProducto=p.idProducto AND ip.idIngreso=".$idIngreso;
         $this->__setSql($sql);
         return $this->consultar($sql);
         
         }
+        
+    public function leerProductosCompra($idCompra){
+        $sql = "SELECT *, ip.precio as precioVenta FROM ingresoproducto ip, producto p WHERE ip.idProducto=p.idProducto AND ip.idCompra=".$idCompra;
+        $this->__setSql($sql);
+        return $this->consultar($sql);
+
+    }
     
     public function leerIngresoPorRangoFecha($inicio,$fin){
         $sql = "SELECT * FROM ingresoproducto ip, producto p WHERE ip.idProducto=p.idProducto AND ip.fecha BETWEEN '".$inicio."' AND '".$fin."' ORDER BY ip.fecha DESC ";

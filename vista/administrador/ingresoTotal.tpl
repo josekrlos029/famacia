@@ -60,6 +60,69 @@
 
 
     }
+    
+    function eliminarFactura(idFactura) {
+        var x = $("#mensaje");
+        cargando();
+        x.html("<p>Cargando...</p>");
+        x.show("speed");
+
+        var data = { idFactura: idFactura };
+
+        $.ajax({
+            type: "POST",
+            url: "/famacia/administrador/eliminarFactura",
+            data: data
+        }).done(function (msg) {
+            var json = eval("(" + msg + ")");
+            if(json.msj=="exito"){
+                
+                exito();
+                ocultar();
+                cargarTabla();
+            }else{
+                x.html("<p>Error al Eliminar Factura</p>");
+                error();
+            }
+            
+        });
+
+    }
+    
+    function eliminarProductoP(idFactura, idProducto) {
+        var x = $("#mensaje");
+        cargando();
+        x.html("<p>Cargando...</p>");
+        x.show("speed");
+
+        document.getElementById('light').style.display = 'none';
+        document.getElementById('fade').style.display = 'none';
+        var data = { 
+            idFactura: idFactura,
+            idProducto: idProducto
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/famacia/administrador/eliminarDetalleProducto",
+            data: data
+        }).done(function (msg) {
+            var json = eval("(" + msg + ")");
+            if(json.msj=="exito"){
+                
+                exito();
+                x.html("<p>Producto Devuelto Correctamente</p>");
+                ocultar();
+                cargarTabla();
+            }else{
+                x.html("<p>Error al Devolver Producto</p>");
+                error();
+            }
+            
+        });
+
+
+    }
 </script>
 <div  id="overlay"></div>
 <div  id="mensaje">

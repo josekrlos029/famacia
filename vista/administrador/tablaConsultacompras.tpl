@@ -8,7 +8,7 @@
                 <th width="30%">Proveedor</th>
                 <th width="40%">Valor</th>
                 <th width="">Ver+</th>
-
+                <th width="">Eliminar</th>
                 </thead>
                 <tbody>
                     <?php 
@@ -25,6 +25,7 @@
                         <td><?php echo $d["nombre"]; ?></td>
                         <td><?php echo round($d["sumaProductos"], 2); ?></td>
                         <td width="5%" style="text-align:right;"><buttom type="submit" class="button small red"  onclick="consultaCompra('<?php echo $idCompra; ?>');">...</buttom></td> 
+                        <td width="5%" style="text-align:right;"><buttom type="submit" class="button small red"  onclick="eliminarCompra('<?php echo $idCompra; ?>');">X</buttom></td> 
 
                 </tr>
                 <?php $sum += $d["sumaProductos"]; } 
